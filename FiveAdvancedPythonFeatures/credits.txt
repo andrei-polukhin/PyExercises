@@ -1,0 +1,2 @@
+This chapter is inspired by towardsdatascience.com:
+https://towardsdatascience.com/five-advanced-python-features-169c96682350?gi=fae579a95f87
