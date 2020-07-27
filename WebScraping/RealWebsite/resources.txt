@@ -1,0 +1,3 @@
+The scraped website is http://books.toscrape.com/
+
+This is a mini-project on the topic of web scraping (using bs4).

@@ -12,4 +12,4 @@ g = itertools.permutations(needed_letters, perm)
 print(next(g), 0)
 
 for i in list(g):
-	print(i)
+    print(i)

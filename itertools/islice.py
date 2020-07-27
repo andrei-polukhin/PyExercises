@@ -8,4 +8,4 @@ step = int(input("Enter step: "))
 g = itertools.islice(text, start_index, end_index, step)
 
 for letter in g:
-	print(letter)
+    print(letter)
