@@ -14,14 +14,15 @@ def caller():
     print("4. Get the genres of all books on the webpage.")
 
     number = int(input("Enter the number of the needed option: "))
-    if number == 1:
-        scraping.get_titles()
-    elif number == 2:
-        scraping.get_warning()
-    elif number == 3:
-        scraping.get_images()
-    elif number == 4:
-        scraping.get_genres()
+    choices = {
+        1: scraping.get_titles,
+        2: scraping.get_warning,
+        3: scraping.get_images,
+        4: scraping.get_genres
+    }
+
+    if number in choices.keys():
+        choices[number]()
     else:
         print("Oops, check your input!")
 
