@@ -1,11 +1,12 @@
 import re
 
+
 def reg(string):
     expression = "^\w+"
     if re.search(expression, string):
-	    print(True)
+        print(True)
     else:
-	    print(False)
+        print(False)
 
 
 if __name__ == "__main__":

@@ -32,5 +32,5 @@ def find_other():
     other_paragraphs = [
         p.string for p in all_paragraphs
         if p.attrs.get('class') != 'subtitle'
-        ]
+    ]
     print(other_paragraphs[0])
