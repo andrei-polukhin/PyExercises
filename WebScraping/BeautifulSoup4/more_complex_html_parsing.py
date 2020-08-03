@@ -1,8 +1,12 @@
+import os
+import sys
 import re
 
 from bs4 import BeautifulSoup
 
-with open("middle.html", "r") as file:
+with open(os.path.join(
+                sys.path[0], "middle.html"
+        ), 'r') as file:
     contents = file.read()
 soup = BeautifulSoup(contents, "html.parser")
 

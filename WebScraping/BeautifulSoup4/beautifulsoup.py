@@ -1,6 +1,11 @@
+import os
+import sys
+
 from bs4 import BeautifulSoup
 
-with open("index.html", 'r') as file:
+with open(os.path.join(
+                sys.path[0], "index.html"
+        ), 'r') as file:
     contents = file.read()
 simple_soup = BeautifulSoup(contents, 'html.parser')
 
