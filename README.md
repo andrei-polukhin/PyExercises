@@ -1,2 +1,2 @@
-# teclado_course
-My code on "The Complete Python Course | Learn Python by Doing" and other, mostly self-learning, exercises (with credits provided).
+# PyExercises
+My Python solutions to LeetCode, Teclado and self-learning tasks. Created primarily for the sake of the tracking of my Python learning progress, but you are welcome to propose changes!
