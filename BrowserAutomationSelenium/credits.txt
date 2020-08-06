@@ -1,0 +1,4 @@
+This exercises are inspired by this Selenium playlist:
+https://www.youtube.com/watch?v=IYILCEV5j6s&list=PLUDwpEzHYYLvx6SuogA7Zhb_hZl3sln66
+
+My sincerest thanks to the instructor!
