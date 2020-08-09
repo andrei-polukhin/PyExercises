@@ -10,6 +10,7 @@ def ask_user():
     print(greet)
     print("ask_user: ", time.time() - start)
 
+
 def complex_calculation():
     print("Started calculating...")
     start = time.time()
