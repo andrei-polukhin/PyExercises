@@ -55,4 +55,4 @@ process2.join()
 process3.join()
 process4.join()
 
-print(f"Two processes join time: {time.time() - start}")
+print(f"Four processes join time: {time.time() - start}")
