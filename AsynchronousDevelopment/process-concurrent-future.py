@@ -16,6 +16,7 @@ def complex_calculation():
     [x**2 for x in range(20000000)]
     print("complex_calculation: ", time.time() - start)
 
+
 start = time.time()
 ask_user()
 complex_calculation()

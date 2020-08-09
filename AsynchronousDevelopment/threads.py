@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 
+
 ####### SINGLE THREAD
 def ask_user():
     start = time.time()
@@ -8,6 +9,7 @@ def ask_user():
     greet = f"Hello, {user_input}"
     print(greet)
     print("ask_user: ", time.time() - start)
+
 
 def complex_calculation():
     print("Started calculating...")
