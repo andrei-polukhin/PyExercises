@@ -18,7 +18,6 @@ def greet(g):
 friends_generator = get_friends()
 g = greet(friends_generator)
 
-print(next(g))
-print(next(g))
-print(next(g))
-print(next(g))  # using for is prohibited as generator will become empty
+for i in range(4):
+    print(next(g))  # finding len = sum(1 for _ in g) is prohibited
+                    # the generator will become empty
