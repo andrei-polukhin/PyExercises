@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 
 text_contents = {}
 
@@ -29,6 +29,29 @@ def check_for_changes():
 def get_text_widget():
     text_widget = root.nametowidget(notebook.select())
     return text_widget
+
+
+def confirm_quit():
+    unsaved = False
+
+    for tab in notebook.tabs():
+        text_widget = root.nametowidget(tab)
+        content = text_widget.get("1.0", "end-1c")
+
+        if hash(content) != text_contents[str(text_widget)]:
+            unsaved = True
+            break
+
+    if unsaved:
+        confirm = messagebox.askyesno(
+            message="You have unsaved changes. Are you sure you want to quit?",
+            icon="question",
+            title="Confirm Quit"
+        )
+        if not confirm:
+            return
+    root.destroy()
+
 
 
 def save_file():
@@ -76,6 +99,7 @@ menubar.add_cascade(menu=file_menu, label="File")
 file_menu.add_command(label="New", command=create_file, accelerator="Ctrl+N")
 file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
 file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
+file_menu.add_command(label="Exit", command=confirm_quit)
 
 notebook = ttk.Notebook(main)
 notebook.pack(fill="both", expand=True)
