@@ -24,8 +24,23 @@ def save_file():
     notebook.tab("current", text=filename)
 
 
+def open_file():
+    filepath = filedialog.askopenfilename()
+    try:
+        filename = os.path.basename(filepath)
+        with open(filepath, "r") as file:
+            content = file.read()
+    except (AttributeError, FileNotFoundError):
+        print("Open operation cancelled")
+        return
+    text_widget = root.nametowidget(notebook.select())
+    text_widget.insert("1.0", content)
+    notebook.tab("current", text=filename)
+
+
+
 root = tk.Tk()
-root.title("Text-Editor-Redefined")
+root.title("Text Editor")
 root.option_add("*tearOff", False)
 
 main = ttk.Frame(root)
@@ -39,6 +54,7 @@ menubar.add_cascade(menu=file_menu, label="File")
 
 file_menu.add_command(label="New", command=create_file)
 file_menu.add_command(label="Save", command=save_file)
+file_menu.add_command(label="Open", command=open_file)
 
 notebook = ttk.Notebook(main)
 notebook.pack(fill="both", expand=True)
