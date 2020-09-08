@@ -3,10 +3,11 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 
 
-def create_file():
+def create_file(content="", title="Untitled"):
     text_area = tk.Text(notebook)
+    text_area.insert("end", content)
     text_area.pack(fill="both", expand=True)
-    notebook.add(text_area, text="Untitled")
+    notebook.add(text_area, text=title)
     notebook.select(text_area)
 
 
@@ -33,9 +34,7 @@ def open_file():
     except (AttributeError, FileNotFoundError):
         print("Open operation cancelled")
         return
-    text_widget = root.nametowidget(notebook.select())
-    text_widget.insert("1.0", content)
-    notebook.tab("current", text=filename)
+    create_file(content=content, title=filename)
 
 
 
