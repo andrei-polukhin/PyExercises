@@ -11,14 +11,22 @@ def create_file():
 
 root = tk.Tk()
 root.title("Text-Editor-Redefined")
+root.option_add("*tearOff", False)
 
 main = ttk.Frame(root)
 main.pack(fill="both", expand=True, padx=1, pady=(5,0))
 
+menubar = tk.Menu()
+root.config(menu=menubar)
+
+file_menu = tk.Menu(menubar)
+menubar.add_cascade(menu=file_menu, label="File")
+
+file_menu.add_command(label="New", command=create_file)
+
 notebook = ttk.Notebook(main)
 notebook.pack(fill="both", expand=True)
 
-create_file()
 create_file()
 
 root.mainloop()
