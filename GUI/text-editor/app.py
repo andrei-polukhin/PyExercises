@@ -51,13 +51,17 @@ root.config(menu=menubar)
 file_menu = tk.Menu(menubar)
 menubar.add_cascade(menu=file_menu, label="File")
 
-file_menu.add_command(label="New", command=create_file)
-file_menu.add_command(label="Save", command=save_file)
-file_menu.add_command(label="Open", command=open_file)
+file_menu.add_command(label="New", command=create_file, accelerator="Ctrl+N")
+file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
+file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
 
 notebook = ttk.Notebook(main)
 notebook.pack(fill="both", expand=True)
 
 create_file()
+
+root.bind("<Control-n>", lambda event: create_file())
+root.bind("<Control-s>", lambda event: save_file())
+root.bind("<Control-o>", lambda event: open_file())
 
 root.mainloop()
