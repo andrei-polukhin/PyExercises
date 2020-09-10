@@ -9,6 +9,8 @@ pylint = "*"
 [packages]
 aiohttp = "*"
 selenium = "*"
+pandas = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.8"
