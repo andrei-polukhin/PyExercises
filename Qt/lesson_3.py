@@ -10,6 +10,7 @@ class Window(QMainWindow):
         self.setGeometry(200, 200, 500, 300)
         self.setWindowTitle("Adding buttons")
         self.setWindowIcon(QIcon("python.png"))
+        self.add_button()
 
     def add_button(self):
         button = QtWidgets.QPushButton(self)
@@ -25,7 +26,6 @@ class Window(QMainWindow):
 def run():
     app = QApplication(sys.argv)
     gui = Window()
-    gui.add_button()
     gui.show()
     sys.exit(app.exec_())
 

@@ -10,6 +10,7 @@ class Window(QMainWindow):
         self.setGeometry(200, 200, 500, 300)
         self.setWindowTitle("Adding labels")
         self.setWindowIcon(QIcon("python.png"))
+        self.add_label()
 
     def add_label(self):
         label = QtWidgets.QLabel(self)
@@ -21,7 +22,6 @@ class Window(QMainWindow):
 def run():
     app = QApplication(sys.argv)
     gui = Window()
-    gui.add_label()
     gui.show()
     sys.exit(app.exec_())
 
