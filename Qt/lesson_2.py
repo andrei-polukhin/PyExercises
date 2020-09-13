@@ -8,7 +8,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setGeometry(200, 200, 500, 300)
-        self.setWindowTitle("My OOP PyQt programme")
+        self.setWindowTitle("Adding labels")
         self.setWindowIcon(QIcon("python.png"))
 
     def add_label(self):
