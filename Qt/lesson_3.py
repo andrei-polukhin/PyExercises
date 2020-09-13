@@ -15,7 +15,7 @@ class Window(QMainWindow):
         button = QtWidgets.QPushButton(self)
         button.setText("Click me")
         button.adjustSize()
-        button.clicked.connect(Window.clicked)
+        button.clicked.connect(self.clicked)
 
     @staticmethod
     def clicked():
