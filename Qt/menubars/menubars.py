@@ -14,17 +14,18 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(735, 385)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(200, 30, 241, 121))
+        self.label.setGeometry(QtCore.QRect(170, 50, 241, 121))
         font = QtGui.QFont()
         font.setPointSize(30)
         self.label.setFont(font)
         self.label.setObjectName("label")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 660, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 735, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -52,6 +53,11 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.actionNew.triggered.connect(lambda: self.clicked("New was clicked"))
+        self.actionSave.triggered.connect(lambda: self.clicked("Save was clicked"))
+        self.actionCopy.triggered.connect(lambda: self.clicked("Copy was clicked"))
+        self.actionPaste.triggered.connect(lambda: self.clicked("Paste was clicked"))
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -70,6 +76,10 @@ class Ui_MainWindow(object):
         self.actionPaste.setText(_translate("MainWindow", "Paste"))
         self.actionPaste.setStatusTip(_translate("MainWindow", "Paste the contents"))
         self.actionPaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
+
+    def clicked(self, text):
+        self.label.setText(text)
+        self.label.adjustSize()
 
 
 if __name__ == "__main__":
