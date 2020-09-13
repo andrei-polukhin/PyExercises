@@ -20,6 +20,7 @@ class Ui_MainWindow(object):
         self.click_button = QtWidgets.QPushButton(self.centralwidget)
         self.click_button.setGeometry(QtCore.QRect(180, 240, 161, 71))
         self.click_button.setObjectName("click_button")
+        self.click_button.clicked.connect(self.clicked)
         self.info_label = QtWidgets.QLabel(self.centralwidget)
         self.info_label.setGeometry(QtCore.QRect(170, 80, 171, 31))
         self.info_label.setObjectName("info_label")
@@ -44,6 +45,10 @@ class Ui_MainWindow(object):
         self.click_button.setText(_translate("MainWindow", "Click me"))
         self.info_label.setText(_translate("MainWindow", "My first designer label"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+
+    def clicked(self):
+        self.info_label.setText("The label has changed")
+        self.info_label.adjustSize()
 
 
 if __name__ == "__main__":
