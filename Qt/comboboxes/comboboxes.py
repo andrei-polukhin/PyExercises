@@ -29,8 +29,8 @@ class Window(QMainWindow):
         self.comboX.removeItem(index)
 
     def pressed(self):
-        x = int(self.comboX.currentText())
-        y = int(self.comboY.currentText())
+        x = self.comboX.currentText()
+        y = self.comboY.currentText()
         result = self.calculate_xor(x, y)
         self.label.setText(f"X XOR Y = {result}")
 
