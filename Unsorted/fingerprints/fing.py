@@ -66,6 +66,11 @@ if __name__ == "__main__":
             "./Unsorted/fingerprints/paraphrase_source.txt",
             "./Unsorted/fingerprints/paraphrase_plag.txt"
         )
+        print("--------THE CHECK ON LONG TEXTS--------")
+        check(
+            "./Unsorted/fingerprints/long_source.txt",
+            "./Unsorted/fingerprints/long_plagiarized.txt"
+        )
     except FileNotFoundError:
         check("origin.txt", "plagiarism.txt")
         print("--------THE CHECK ON DIRECT PLAGIARISM--------")
@@ -74,3 +79,5 @@ if __name__ == "__main__":
         check("mosaic_source.txt", "mosaic_plagiarized.txt")
         print("--------THE CHECK ON CLOSE PARAPHRASING--------")
         check("paraphrase_source.txt", "paraphrase_plag.txt")
+        print("--------THE CHECK ON LONG TEXTS--------")
+        check("long_source.txt", "long_plagiarized.txt")

@@ -1,0 +1,2415 @@
+Bachelor Thesis
+
+Abdul Sabor Bostan
+
+Winnowing Algorithm for Program Code
+
+16 July 2017
+
+supervised by:
+Prof. Dr. Schupp
+
+Hamburg University of Technology (TUHH)
+Technische Universität Hamburg-Harburg
+Institute for Software Systems
+21073 Hamburg
+
+Eidesstattliche Erklärung
+Ich versichere an Eides statt, dass ich die vorliegende Arbeit selbstständig verfasst und
+keine anderen als die angegebenen Quellen und Hilfsmittel verwendet habe. Die Arbeit
+wurde in dieser oder ähnlicher Form noch keiner Prüfungskommission vorgelegt.
+
+Hamburg, den 16.07.2017
+Abdul Bostan
+
+iii
+
+Contents
+
+Contents
+1. Introduction
+
+1
+
+2. Background
+2.1. Typical Plagiarism Attacks
+2.2. Desirable Properties . . . .
+2.3. Rabin-Karp Algorithm . . .
+2.4. All-To-All Matching . . . .
+2.5. Java Bytecode . . . . . . .
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+3. Winnowing Algorithm
+3.1. Parameter . . . . . . . . . . . . . . .
+3.2. Example . . . . . . . . . . . . . . . .
+3.3. Efficient Implementation of Winnowing
+3.4. Expected Density . . . . . . . . . . .
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+3
+3
+3
+5
+5
+7
+
+.
+.
+.
+.
+
+9
+9
+9
+10
+12
+
+4. Implementation
+4.1. Requirements and Restrictions . . . . . . . .
+4.2. Structure . . . . . . . . . . . . . . . . . . . .
+4.3. Workflow . . . . . . . . . . . . . . . . . . . .
+4.3.1. Input . . . . . . . . . . . . . . . . . .
+4.3.2. Tokenization . . . . . . . . . . . . . .
+4.3.3. K-Gram and Hashing . . . . . . . . .
+4.3.4. Build Windows and Select Fingerprints
+4.3.5. Compare Fingerprints . . . . . . . . .
+4.3.6. Output . . . . . . . . . . . . . . . . .
+4.4. Implementation Details . . . . . . . . . . . .
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+
+15
+15
+15
+16
+17
+17
+19
+20
+21
+22
+22
+
+5. Experiments
+5.1. Goals . . . . . . . . . . .
+5.2. Test Set . . . . . . . . .
+5.3. Test Run . . . . . . . . .
+5.3.1. First Test Run . .
+5.3.2. Second Test Run
+5.3.3. Third Test Run .
+5.4. Evaluation . . . . . . . .
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+23
+23
+23
+24
+24
+25
+26
+26
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+
+6. Conclusion and Future Work
+
+29
+
+A. Functions
+
+33
+
+B. Results
+B.1. Bytecode . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+35
+35
+
+v
+
+Contents
+B.2. Source Code . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+vi
+
+36
+
+List of Figures
+
+List of Figures
+2.1.
+2.2.
+2.3.
+2.4.
+2.5.
+
+K-Gram example . . . . . . . . . . .
+All-To-All matching example . . . .
+Structure of Java class file . . . . .
+Java Hello World example . . . . .
+Java bytecode Hello World example
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+4
+6
+7
+8
+8
+
+3.1. Winnowing algorithm example . . . . . . . . . . . . . . . . . . . . . . .
+3.2. Code for winnowing main loop . . . . . . . . . . . . . . . . . . . . . . .
+
+10
+11
+
+4.1.
+4.2.
+4.3.
+4.4.
+4.5.
+4.6.
+4.7.
+4.8.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+16
+16
+17
+18
+19
+20
+21
+22
+
+A.1. Functions for getting minimum value and corresponding index in an array
+
+33
+
+Structure of the copy-detection tool .
+Workflow of the implementation . . .
+Source code tokenization . . . . . . .
+Bytecode tokenization . . . . . . . . .
+Class KGram . . . . . . . . . . . . . .
+Code snippet for building windows and
+Fingerprint comparison . . . . . . . .
+Found matches example . . . . . . . .
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+. . . . .
+. . . . .
+. . . . .
+. . . . .
+. . . . .
+selecting
+. . . . .
+. . . . .
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+. . . . . . .
+. . . . . . .
+. . . . . . .
+. . . . . . .
+. . . . . . .
+fingerprints
+. . . . . . .
+. . . . . . .
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+
+.
+.
+.
+.
+.
+.
+.
+.
+
+vii
+
+1. Introduction
+Plagiarism is not new and has always been a problem in society, particularly in the academic area, but through digitalization and the widespread use of computers, copying
+documents has become very easy. Nowadays, all kinds of documents are available as
+digital content and freely accessible either legally or illegally.
+This development makes it easy for culprits to copy digital content found on the web
+without much effort. Therefore, plagiarism can be found in any field such as literature,
+design, scientific papers, and source code.
+This thesis will focus on the detection of a particular type of plagiarism: source code
+plagiarism, also known as software plagiarism. Source code plagiarism is often done by
+computer science students. Often, they solve their assignments by copying from other
+students or copying it from the internet and presenting it as their own work.
+Due to this, universities are more concerned about this development and have worked
+on tools to detect plagiarism. Through this effort, copy-detection tools were invented and
+are used in academia. The developed tools search for plagiarism, either by comparing a
+set of documents and determining if similarities exist between them, or by searching on
+the internet or another database for plagiarism matches.
+For example, the copy-detection tool MOSS [6], which is based on the winnowing algorithm [6], detects plagiarism in documents and source code. Another famous tool is
+JPlag [1], which was developed by the Karlsruhe Institute of Technology to find software
+similarities by comparing multiple sets of source code. JPlag detects disallowed copying
+of student exercises without comparing to the internet.
+The disallowed usage of others’ source code without crediting the original author is not
+only a problem in universities but also in economics. Companies could suffer big economic
+losses if third parties would be able to obtain the source code of their products and then
+make profit by re-selling their products after modifying their user interfaces. However,
+in this case, usually a copy-detection tool like JPlag and MOSS is not helpful because
+source code of companies is normally confidential.
+Therefore, a new solution is needed to detect plagiarism if the source code is not available for a suspicious program. An approach is to compare the binary code of a software
+to detect plagiarism. Here, source code is not needed and similarities between binary
+codes are detected. As a result of this, the two goals of this thesis will be to develop
+a plagiarism checker for source code and then for binary code, where the focus lies on
+the Java language, so that the developed tool should be able to find similarities between
+a set of Java source files and between a set of Java class files, which contain the bytecode.
+The tool will be based on the fingerprint algorithm winnowing [6], which maps an arbitrarily large file to hashes. These hashes uniquely identify the original file just as people
+are uniquely identified by human fingerprints.
+
+1
+
+1. Introduction
+After the development of the tool, the analysis of the following research questions
+is important:
+1. Is the copy-detection tool detecting all plagiarism cases in source code and
+bytecode?
+The results of this question should answer what kind of similarities in source code
+and bytecode are detected by the winnowing algorithm and show which plagiarism
+attacks have a high probability of not being found.
+2. Is there a relation between found matches in source code and bytecode?
+This research question focuses on the aspect if for each match detected in the
+bytecode a corresponding match can be found in source code or vice versa.
+The goal is to have a copy-detection tool which is able to detect all similarities in Java
+source code and bytecode. Additionally, finding matches in one type of code should imply
+that the same matches are also detected in the other type of code. Therefore, if the
+source code is not available, plagiarism should also be found by only comparing binary
+code.
+An important note is that tools like JPlag, MOSS or this thesis’ implementation only
+show similarities. The found similarities never imply that plagiarism is found. The decision to declare found matches as plagiarism must be done by the user after analyzing the
+found matches.
+The thesis is structured into six chapters. First, the prerequisites for understanding copydetection algorithms will be explained in Chapter 2, which includes a listing of often used
+plagiarism attacks, desirable properties for a plagiarism checker, two examples of fingerprint algorithms, and a brief introduction to Java bytecode.
+Chapter 3 is dedicated to the winnowing algorithm on which our implementation is
+based. The sequence of actions of winnowing are shown using an example and then an
+efficient implementation of the algorithm is presented. After that, the term expected
+density is introduced, which is important for the evaluation of the experiments.
+In Chapter 4, the implementation of the copy-detection tool is presented. The requirements and restrictions are explained and the structure of the tool is given. Then in Section
+4.3, the workflow is explained step by step for both types of code. Chapter 5 details the
+results of several test runs. First, the goals, which are derived from the research questions,
+are defined and then the sample data is described. After that, the results of the three
+test runs are shown and finally, there will be an evaluation of the test results. Finally,
+Chapter 6 contains the conclusion of this thesis and further improvements.
+
+2
+
+2. Background
+This chapter describes the prerequisites required for understanding copy detection in
+source code and binary code. Also, plagiarism attacks and desirable properties will be
+introduced that a copy-detection algorithm needs to satisfy to be robust against typical plagiarism attacks. Then, the algorithms Karp-Rabin and All-to-All matching are
+described and analyzed to show their weaknesses. In the end, a brief introduction and
+explanation of Java bytecode will be provided, because knowing the basics of bytecode is
+necessary to understand the implementation in Chapter 4.
+
+2.1. Typical Plagiarism Attacks
+Program code plagiarism is the act of using or modifying someone else’s code without
+authorization and representing it as one’s own work, by not crediting the original author.
+Typical plagiarism attacks are the following [2]:
+1. Copying word for word
+2. Changing comments and whitespace
+3. Renaming variable identifiers
+4. Reordering the positions of code blocks and statements
+5. Adding redundant or dummy statements and variables
+6. Changing data types
+7. Replacing control structures with equivalent structures
+The first three methods are very simple plagiarism attacks and do not need large amounts
+of time. Also, it is not necessary for the attacker to understand the code because no
+functionality is changed by this kind of attacks.
+Methods 4–5 are typical attacks used by culprits, who understand the basics of the implementation language. Methods 1–5 are more low-level attacks, which can be detected
+by most copy-detection algorithms. Methods 6–7 are higher-level plagiarism attacks committed by an attacker with understanding of the source code structure. These attacks
+are not easily detected by copy-detection algorithms.
+
+2.2. Desirable Properties
+A plagiarism detector should be robust against the attacks of Methods 1–5. Therefore,
+we define three desirable properties that a copy-detection algorithm should have [6]:
+
+3
+
+2. Background
+• Insensitivity:
+The matches in program code need to be unaffected by whitespace, capitalization,
+comments, and punctuation. Furthermore, matches should also be insensitive to
+the renaming of variable identifiers.
+• Noise suppression:
+The discovered matches must be large enough to imply that the code block has
+been copied. Hence, it is uninteresting for a copy-detection algorithm to find short
+matches, such as a try-catch block in two different Java files.
+• Position independence:
+The set of matches found needs to be unaffected by adding parts to the program
+code and removing parts of it. Shuffling the order of blocks in program code should
+also not change the set of discovered matches.
+The first property is handled the same way by most copy-detection algorithms. The input
+will run through a tokenization step, removing all undesirable differences between program
+codes, e.g. comments, whitespace, and different variable names.
+Handling noise suppression can be done by using k-grams, which are used for copydetection algorithms based on fingerprints. The definition of a k-gram is [6]:
+Definition 1 (K-GRAM). K-Gram is a contiguous substring of length k from a given
+string, where the parameter k is chosen by the user.
+
+ThisIsAKGram.
+(a) String
+
+ThisI hisIs isIsA sIsAK IsAKG sAKGr AKGra KGram
+(b) 5-Grams derived from the string
+
+Figure 2.1.: K-Gram example
+In Figure 2.1, an example of the derivation of k-grams from a string is shown. We define
+the length of the string as l. The number of k-grams derived from a string is l − k + 1.
+For Figure 2.1, we get eight k-grams (Note: 12 − 5 + 1 = 8).
+The reason why k-grams are used to satisfy the noise suppression property is, that there
+exists a threshold k, where the length of all interesting matches is not smaller than k and
+all matches less than k are usually not of interest, because these matches are common
+idioms, keywords, or identifiers of the chosen implementation language.
+The third property is the most interesting requirement, which is difficult to satisfy
+because of the effect that removing or adding parts will usually have on the set of matches.
+Thus, a copy-detection algorithm needs to minimize the influence of removing, adding,
+and shuffling parts. This can also be done by the usage of k-grams for fingerprint based
+algorithms.
+
+4
+
+2.3. Rabin-Karp Algorithm
+
+2.3. Rabin-Karp Algorithm
+The Rabin-Karp algorithm for fast substring matching [3], created by Michael O. Rabin
+and Richard M. Karp in 1987, is one of the first fingerprinting algorithms that uses kgrams. The algorithm tries to find occurrences of a string str1 with length k in a string
+str2. The length of str2 must be larger than k. Therefore, the algorithm derives all
+k-grams from str2 and hashes them and str1. Then, the hashes of all derived k-grams
+from str2 are compared with the hash of str1. The purpose of hashing is to uniquely
+identify a string with a number. Then, it is possible to compare numbers instead of
+comparing strings.
+The cost of hashing strings of length k is expensive for large k, since hash values for all
+substrings of size k of str2 need to be calculated. Therefore, a rolling hash function is
+suggested, which has the ability to calculate the hash values without rehashing the whole
+string. The rolling hash function makes it possible to efficiently compute the current hash
+of the ith k-gram from the preceding hash of the i − 1th k-gram in constant time.
+A k-gram c1 . . . ck is handled as a k-digit number in some base b with the following
+hash for H(c1 . . . ck ) [6]:
+H(c1 . . . ck ) = c1 · bk-1 + c2 · bk-2 · . . . + ck−1 · b + ck ,
+and the hash for H(c2 . . . ck+1 ) is defined as [6]:
+H(c2 . . . ck+1 ) = (H(c1 . . . ck ) - c1 · bk-1 ) · b + ck+1
+Because bk-1 is a constant, H(c2 . . . ck+1 ) can be computed from H(c1 . . . ck ) with only
+two additions and two multiplications. A weakness of this algorithm is that the values of
+ci are usually small integers and therefore, the addition step is only affecting low-order
+bits of the hash. Ideally, a good hash function for ci should affect all bits of the hash.
+This problem can be fixed by two additional steps [6]. First, by multiplication of the entire
+hash with b and second by switching in the incremental step the order of multiplication
+and addition.
+Altogether, H ’ (c2 . . . ck+1 ) is defined as [6]:
+H ’ (c2 . . . ck+1 ) = ((H ’ (c1 . . . ck ) - c1 · bk ) + ck+1 ) · b
+
+2.4. All-To-All Matching
+All-to-all matching [4] was developed by Manber and is the first fingerprinting-based
+algorithm for collections of documents. The algorithm is used to find similar files in file
+systems. Unlike the Rabin-Karp algorithm, it compares all k-grams in the collection of
+documents instead of searching for a single string in a document.
+Figure 2.2 shows the individual steps of the algorithm. After removing all irrelevant
+features in Figure 2.2(a), we get Figure 2.2(b). Figure 2.2(c) shows all derived k-grams
+from Figure 2.2(b) and in Figure 2.2(d), the hashes of all k-grams are shown.
+
+5
+
+2. Background
+
+This is an example of all-to-all matching
+(a) Sample text
+
+thisisanexampleforalltoallmatching
+(b) Canonical form of the text
+
+thisis hisisa isisan sisane isanex sanexa anexam nexamp exampl xample amplef
+mplefo plefor lefora eforal forall orallt rallto alltoa lltoal ltoall toallm oallma allmat
+llmatc lmatch matchi atchin tching
+(c) 6-Grams derived from the text
+
+77 74 42 17 98 50 17 98 08 88 67 39 77 74 42 17 98 29
+33 12 66 45 34 98 32 63 24 53 75
+(d) Hypothetical hashes of the 6-grams
+
+Figure 2.2.: All-To-All matching example
+
+Now, a theoretically possible approach is to compare all hashes from the documents, but
+in reality, the computational costs are too high, because the set of hashes can become
+very large for bigger documents. Therefore, it is necessary to find a subset of the hashes
+which should represent each document.
+An approach is to select every ith hash of a document as a fingerprint. However,
+this strategy does not satisfy the desirable property of position independence. Insertion,
+deletion, and reordering would have a big effect on the set of matches. For example,
+removing one character at the beginning of the document shifts the position of all kgrams by one. As a result, the original document shares none of its fingerprints with
+the copied and modified file. Thus, this strategy is incorrect, because any effective copydetection algorithm based on fingerprints needs to be independent of the position of the
+fingerprints within the document.
+Another strategy, used by Manber, is to select hashes that are 0 mod p. In this case, the
+desirable property of position independence is satisfied because the chosen fingerprints are
+independent of their position within the document. Thus, if two documents share a hash
+that is 0 mod p, it is selected regardless of the position. A disadvantage of this strategy
+is the missing guarantee of the algorithm to find matches. Define the distance between
+consecutively selected fingerprints as the gap between them. The maximum gap is always
+p and any matches inside a gap will not be detected, because we only select fingerprints
+that are 0 mod p. To solve this problem, Chapter 3 will introduce the winnowing algorithm,
+an efficient algorithm for selecting fingerprints. The main advantage of winnowing is that
+the maximum gap between selected consecutive fingerprints is limited.
+
+6
+
+2.5. Java Bytecode
+
+Figure 2.3.: Structure of Java class file
+
+2.5. Java Bytecode
+Java bytecode is the instruction set of the Java Virtual Machine (JVM) operating on
+the operand stack. There are 203 instructions, which each consist of one opcode and its
+operand. Java bytecode is generated from a class file and then runs on the JVM by a
+Java compiler.
+The class file consists of the sections header, constant pool, field, method table and
+attribute table.
+The first important information in the header is the magic number, which identifies the
+class file format. After that, the version information and constant pool is located, which
+includes all information about the used constants in the class. After that, the field and
+method tables are located. The field and method tables contain the information about
+variables and methods. Finally, located at the end of the class file, is the attribute table,
+which can be used to debug the Java program by JVM.
+The structure of a Java class file is shown in Figure 2.3, which is taken from a paper
+by Jeong-Hoon Ji [2]. The actual bytecode is in the code attribute table in the method
+table. For every user-defined method in the source code, a method table is generated
+along with a default constructor in the class file.
+For instance, Figure 2.4 contains a Java class HelloWorld. The class HelloWorld consists
+only of a main method. As a result, the class file HelloWorld.class will contain two method
+tables, a default constructor and the main method.
+In Figure 2.5, bytecode is shown for the Java class HelloWorld. The bytecode contains
+two methods: one is the main method; the other is the default constructor, which is
+inferred by the compiler.
+Below each method, there is a sequence of bytecode instructions. For every method in
+a class file, a corresponding bytecode array exist. The numbers in front of each instruc-
+
+7
+
+2. Background
+
+1
+2
+3
+4
+5
+6
+7
+8
+
+public class HelloWorld
+{
+public static void main(String[] args)
+{
+// Output
+System.out.println("Hello World");
+}
+}
+
+Figure 2.4.: Java Hello World example
+1
+2
+3
+4
+5
+6
+7
+
+//Compiled from "HelloWorld.java"
+public class HelloWorld extends java.lang.Object{
+public HelloWorld();
+Code:
+0: aload_0
+1: invokespecial #1; //Method java/lang/Object."<init>":()V
+4: return
+
+8
+
+public static void main(java.lang.String[]);
+Code:
+0: getstatic #2; //Field java/lang/System.out:Ljava/io/PrintStream;
+3: ldc #3; //String Hello World
+5: invokevirtual #4; //Method
+java/io/PrintStream.println:(Ljava/lang/String;)V
+8: return
+
+9
+10
+11
+12
+13
+
+14
+15
+
+}
+
+Figure 2.5.: Java bytecode Hello World example
+tion refer to the index of the array where each opcode and its parameter are stored. An
+opcode is one byte long and instructions can have multiple parameters. Therefore, the
+numbers are not consecutive. Finally, the numbers after the instructions are referring to
+the corresponding number in the constant pool.
+The bytecode for each method stored in the method tables is important for our implementation, which will be shown in Chapter 4. This code will be used to find similarities
+between class files.
+
+8
+
+3. Winnowing Algorithm
+In this chapter, we describe the winnowing algorithm for selecting fingerprints from hashes
+of k-grams. The important steps of the algorithm will be explained with an example and
+code for an efficient implementation of winnowing will be presented. Finally, we prove
+the expected density of winnowing [7].
+
+3.1. Parameter
+The winnowing algorithm is used by the copy-detection tool MOSS and was introduced
+by Saul Schleimer in 2003 [6]. The algorithm selects fingerprints for each document and
+compares them. The following two properties should be satisfied given a set of documents
+that are to be compared:
+1. A match is detected only if the length of the match is at least as long as the
+guarantee threshold t.
+2. Any matches shorter than the noise threshold k are not detected.
+The constants t and k are chosen by the user, where k ≤ t. The second property is satisfied by only considering hashes of k-grams. Thus, we avoid any matches shorter than k. A
+bigger k increases the probability that found matches between documents are not coincidental. However, we cannot detect possible similarities of length smaller than k, because
+the increase of k limits the sensitivity to reordering of substrings. As a result, we need
+to find a minimum value for k, which eliminates as many coincidental matches as possible.
+
+3.2. Example
+Figure 3.1 shows the important steps of the winnowing algorithm. First, all irrelevant
+features will be removed from Figure 3.1(a). This results in Figure 3.1(b), which does
+not contain any whitespace, punctuation, or capitalized characters. After that, all the
+5-grams of the string of Figure 3.1(b) are shown in Figure 3.1(c). Figure 3.1(d) contains
+the hashes of all 5-grams from Figure 3.1(c). Afterward, windows are built with the
+hashes in Figure 3.1(e). In this example the length is 4 because the window length should
+be smaller than our value for k. Fingerprints will be selected from the windows using the
+following strategy [6]:
+Strategy 1 (WINNOWING). In every window, the minimum hash value is selected. Every
+selected hash value is saved as a fingerprint. If a window has more than one minimum
+value, select the rightmost occurrence. Every hash can only be selected once. If the
+minimum value of a window was selected before as a fingerprint, no hash value will be
+selected in this window.
+
+9
+
+3. Winnowing Algorithm
+
+Hello! I am Fo and this is Fa.
+(a) Sample text
+
+helloiamfoandthisisfa
+(b) Canonical form of the text
+
+hello elloi lloia loiam oiamf iamfo amfoa mfoan foand
+oandt andth ndthi dthis thisi hisis isisf sisfa
+(c) 5-Grams derived from the text
+
+77 74 42 17 98 50 15 98 08 88 67 39 77 74 42 17 98
+(d) Hypothetical hashes of the 4-grams
+
+(77, 74, 42, 17) (74, 42, 17, 98) (42, 17, 98, 50)
+(17, 98, 50, 15) (98, 50, 15, 98) (50, 15, 98, 08)
+(15, 98, 08, 88) (98, 08, 88, 67) (08, 88, 67, 39)
+(88, 67, 39, 77) (67, 39, 77, 74) (39, 77, 74, 42)
+(77, 74, 42, 17) (74, 42, 17, 98)
+(e) Windows of hashes of length 4
+
+17 15 08 39 17
+(f) Fingerprints selected by winnowing
+
+[17,3] [15,6] [08,8] [39,11] [17,15]
+(g) Fingerprints paired with 0-base positional information.
+
+Figure 3.1.: Winnowing algorithm example
+Each selected hash is shown in bold in Figure 3.1(e). A selected hash is with high probability still the minimum value in adjacent windows, because the minimum of w random
+hashes is presumably smaller than one additional hash. That is the reason for choosing
+the minimum value of a window.
+Thus, the amount of selected hashes is far smaller than the amount of windows while
+it is still selecting representing hashes. The set of selected fingerprints is shown in Figure
+3.1(f). A useful feature to implement in copy-detection tools is recording the position
+of fingerprints in the document to show the matching substring in a user interface. In
+Figure 3.1(g) this is shown for this chapter’s example.
+
+3.3. Efficient Implementation of Winnowing
+Figure 3.2 depicts code for an efficient implementation of the main winnowing loop. This
+code was provided in the paper written by Saul Schleimer [6]. The implementation in
+
+10
+
+3.3. Efficient Implementation of Winnowing
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+
+void winnow(int w) { /*window size*/
+// circular buffer implementing window of size w
+hash_t h[w];
+for (int i=0; i<w; ++i) h[i] = INT_MAX;
+int r = 0; // window right end
+int min = 0; // index of minimum hash
+// At the end of each iteration, min holds the
+// position of the rightmost minimal hash in the
+// current window. record(x) is called only the
+// first time an instance of x is selected as the
+// rightmost minimal hash of a window.
+while (true) {
+r = (r + 1) % w; // shift the window by one
+h[r] = next_hash(); // and add one new hash
+if (min == r) {
+// The previous minimum is no longer in this
+// window. Scan h leftward starting from r
+// for the rightmost minimal hash. Note: min
+// starts with the index of the rightmost
+// hash.
+for (int i=(r-1)%w; i!=r; i=(i-1+w)%w)
+if (h[i] < h[min]) min = i;
+record(h[min], global_pos(min, r, w));
+} else {
+// Otherwise, the previous minimum is still in
+// this window. Compare against the new value
+// and update min if necessary.
+if (h[r] <= h[min]) {
+min = r;
+record(h[min], global_pos(min, r, w));
+}
+}
+}
+}
+
+Figure 3.2.: Code for winnowing main loop
+
+Figure 3.2 considers the fact that the minimum value from a preceding window is usually
+still within the current window. Therefore, Figure 3.2 only contains a single comparison
+for this case in line 28. The other case in line 15 is that the minimum value of the
+preceding window is no longer in the current window. In that case, the minimum hash
+has to be computed by traversing the entire window from right-to-left to get the rightmost
+occurrence of the minimum hash. A fingerprint is created by saving the position, together
+with the selected hash in line 23.
+
+11
+
+3. Winnowing Algorithm
+
+3.4. Expected Density
+The density of a fingerprinting algorithm is the expected proportion of hashes selected
+as fingerprints. The density of the winnowing algorithm is associated with w, the size of
+2
+windows. Saul Schleimers paper [6] showed that the expected density is: d = w+1
+The All-to-All matching algorithm with the 0 mod p approach for hash selection, which
+was presented in Section 2.4, has 1+ln(w)
+as expected density [6]. This is considerably
+w
+more than that of the winnowing algorithm.
+2
+Lemma 1. The expected density of winnowing is d = w+1
+, given that the hashes are
+independently and uniformly distributed and the possibility of a tie for the minimum value
+for any small window is small enough to be ignored.
+
+Proof. Let us define the function C that maps the position of a window (position of
+leftmost hash) to the position of a fingerprint which the window had selected. The
+function C is monotonic increasing, if i and j are two selected fingerprints positions with
+i < j, then C(i) < C(j).
+To prove this assumption, two cases must be considered [7]
+1. Windows Wi and Wj are not overlapping.
+Then the position of any hash in Wj is bigger than C(i). Thus, we have C(i) <
+C(j).
+2. Windows Wi = (hi , hi+1 , · · · , hj , · · · , hi+w−1 ) and Wj = (hj , hj+1 , · · · , hi+w−1 , · · · ,
+hj+w−1 ), where i < j ≤ i + w − 1, are overlapping.
+Then, the maximum value of C(i) is q, where q is the position of minimum hash
+among hj , · · · , hi+w−1 . Similarly, the minimum value of C(j) is also q because of
+the overlapping windows. Thus, we have C(i) ≤ C(j).
+These two cases show that the function C is monotonic increasing. Now, we define a
+random variable Xi that is 1 if Wi selects a fingerprint which is not selected by any
+previous window. Consider Wi and Wi−1 which are overlapping on all hashes except the
+leftmost hi−1 and rightmost hi+w−1 hash. Wi ∪ Wi−1 is an interval of length w + 1.
+Then we define p containing the smallest hash in the interval. As a result, we have the
+following three cases:
+1. If p = i − 1, then Wi must select a hash in a different position q, where q > p
+because Wi−1 is selecting p and p ∈
+/ Wi . Because of the monotonicity of function
+C, Wi−1 is the first window to select q. Therefore, we have Xi = 1.
+2. If p = i + w − 1, then it will be selected by Wi because Wi is the first window
+containing p. Thus, Xi = 1.
+3. If i − 1 < p < i + w − 1, then Wi−1 and Wi select p. Thus, Wi is not the first
+window to collect p and Xi = 0.
+For case one and two the probability is respectively
+the expected value for our random variable Xi .
+
+12
+
+1
+w+1 .
+
+As a result, we obtain
+
+2
+w+1
+
+as
+
+3.4. Expected Density
+The expected density allows programmers to compare the measured density of their implementation. If there is a big difference between the measured and expected density, the
+programmer should revise his implementation, hash function or test data. In Chapter 5,
+we will use the expected density to evaluate the test runs.
+
+13
+
+4. Implementation
+This chapter presents decisions made regarding the structure and implementation for our
+copy-detection tool. First, the different requirements for Java source code and bytecode
+will be named and then the structure of our implemented tool is presented. Finally, the
+workflow of this implementation will be shown and explained.
+Our implementation handles source code and bytecode differently in some steps. These
+differences will be shown in detail by explaining every step of the workflow. Our motivation
+is to have a copy-detection tool based on winnowing with the ability to find similarities
+between a set of source code files or binary code files.
+An important fact about this tool is that found matches do not imply that plagiarism
+has occurred. They only imply that similarities exist and then it is up to the user to check
+manually, if the found matches represent cases of plagiarism.
+
+4.1. Requirements and Restrictions
+Our implementation is based on winnowing and hence it must satisfy the desirable properties presented in Chapter 2. Recall the desirable properties: insensitivity to irrelevant
+features like comments and whitespace, independence of the found matches to the positions in the text, and finding only matches larger than a defined noise threshold.
+As mentioned in Chapter 3, a useful feature for a copy-detection tool is a user interface
+which shows the found matches. This feature is also one of our requirements because in
+the end the user manually checks if plagiarism was detected, and therefore a simple way is
+needed to see the found matches. Another requirement is that the comparison of source
+code and bytecode should be considered independently, with the only exception being
+that we compile the source code to get the corresponding bytecode. Thus, we define the
+restriction that source code files must be compilable to generate bytecode. Furthermore,
+the Java code needs to be restricted to the Java Standard Library, due to the tokenization
+step which will be explained later in detail.
+
+4.2. Structure
+The requirement of independence between source code and bytecode has an influence
+on the decisions made regarding the overall structure. This implementation has two
+independent comparison analyses: one for source code, the other for bytecode. Both save
+the results separately, and then the results are analyzed to decide if plagiarism was found.
+The described course of action is pictured in Figure 4.1. In the representation, we
+have two independent objects named Source Code and Bytecode, which run through the
+process of comparison. The comparison process is defined by our workflow that will be
+presented in the next section. After matches are found, the copy-detection tool generates
+output with the detected similarities for the user. Still, we distinguish between source
+code and bytecode. Thus, we obtain independent outputs, which are both analyzed by
+
+15
+
+4. Implementation
+the user to make a decision on plagiarism. At this point, there is no longer a distinction
+between the type of code as the user uses information both from the bytecode and the
+source code comparison to make a decision.
+
+Figure 4.1.: Structure of the copy-detection tool
+
+4.3. Workflow
+The workflow is defined by eight steps, shown in Figure 4.1. These are relatively similar
+to the individual steps of the winnowing example shown in Figure 3.1. First, the input
+is read, which includes the program code files and the parameter w for window size and
+k for the k-gram length. Different parameters are defined for source code and bytecode.
+The winnowing algorithm for source code has wsc and ksc as parameters while the
+bytecode has parameters wbc and kbc where ksc < kbc , because a single Java source code
+line normally generates multiple bytecode instructions as can be seen in Figure 2.5. Then,
+the program code files are tokenized and k-grams are derived from them. With the hash
+values of all k-grams, windows are built and the fingerprints are selected after that. The
+selected hashes from the files get compared and output in form of HTML pages is then
+generated.
+The steps of handling program code in general, are shown in Figure 4.2. The more
+interesting aspects are the differences of handling source code and bytecode. These will
+be presented in the following in detail for the individual steps.
+
+Figure 4.2.: Workflow of the implementation
+
+16
+
+4.3. Workflow
+
+4.3.1. Input
+First, the parameters wbc , kbc , wsc , and ksc are read. The k-gram length for source code
+needs to be at least 25 because most of the widely used Java keywords and identifier in
+the Java Standard Library are smaller than 25. This value was chosen as a minimum value
+to reduce coincidental matches. Therefore, the tool throws an exception if kbc ≤ ksc or
+ksc ≤ 25. The window length should not be bigger than the k-gram length and for small
+values for wsc and wbc our implementation would select too many hashes as a fingerprint.
+As a result, the false-positive rate would increase. Hence, an exception appears if wbc < 15
+or wsc < 15. Next, from the input directory, where all source code files are saved that
+are to be compared, the Java files get compiled. Through this, the corresponding class
+files are obtained and the bytecode can be extracted. This step has the only dependency
+between source code and bytecode. Without compiling the Java files, bytecode cannot
+be obtained. Therefore, compilable source code is essential as a requirement.
+
+4.3.2. Tokenization
+The second step is responsible for removing irrelevant features from the input. Here, we
+defined different rules for source code and bytecode tokenization. Source code tokenization has the following rules:
+• Rename all variables identifiers to Y
+• Change string values to X
+• Delete whitespace, comments and punctuation
+
+1
+2
+3
+4
+5
+6
+7
+8
+
+public class HelloWorld
+{
+public static void main(String[] args)
+{
+// Output
+System.out.println("Hello World");
+}
+}
+
+Result after source code tokenization of class HelloWorld:
+publicclassYpublicstaticvoidmainstring[]YsystemoutprintlnX
+
+Figure 4.3.: Source code tokenization
+In Figure 4.3, the rules are applied to the source code example. Initially, variables
+are renamed and string values exchanged. The difficulty of renaming variables lies in
+
+17
+
+4. Implementation
+distinguishing the user-defined variable identifiers from basic function identifiers, for example System.out.println. Renaming all identifiers would have negative consequences,
+such as the false-positive error rate increasing. Therefore, a file with all class and function keywords from the Java Standard Library is created to check if an identifier belongs
+to the JSL. Thus, Java files need to be restricted to the Java Standard Library. Renamed variables and changed string values are printed in bold in Figure 4.3. For bytecode
+tokenization the following rules were defined:
+• Delete comments, whitespace and the number in front of instructions that refers to
+the index of the corresponding array (see Section 2.5)
+• Replace indexes of the constant pool with their value
+• Rename variables to Y
+• Change string values to X
+
+1
+2
+3
+4
+5
+6
+7
+
+//Compiled from "HelloWorld.java"
+public class HelloWorld extends java.lang.Object{
+public HelloWorld();
+Code:
+0: aload_0
+1: invokespecial #1; //Method java/lang/Object."<init>":()V
+4: return
+
+8
+
+public static void main(java.lang.String[]);
+Code:
+0: getstatic #2; //Field java/lang/System.out:Ljava/io/PrintStream;
+3: ldc #3; //String Hello World
+5: invokevirtual #4; //Method
+java/io/PrintStream.println:(Ljava/lang/String;)V
+8: return
+
+9
+10
+11
+12
+13
+
+14
+15
+
+}
+
+Result after bytecode tokenization of class HelloWorld:
+publicclassYpublicY()aloadinvokespecialobject.<init>:()Vreturnpublicstatic void
+main(String[])getstaticSystem.out:PrintStreamldcXinvokevirtualprintln:(String)Vreturn
+
+Figure 4.4.: Bytecode tokenization
+Applying these tokenization rules takes more effort. Bytecode contains more irrelevant
+features and information that can be removed. The method information, the sequence of
+instructions and the corresponding parameter from the constant pool are important, as
+we can see in Figure 4.4.
+
+18
+
+4.3. Workflow
+In the example in Figure 4.4, all irrelevant features are removed, variable identifiers and
+string values changed, which are shown in bold, and the constant pool value replaces
+the reference after an instruction. Similarly to replacing variable names in source code
+tokenization, it is checked if the identifier is part of the Java Standard Library. The
+rule is only applied if this is not the case. The remaining steps of the workflow do not
+differentiate between the types of code. They have the same sequence of actions for
+source code and bytecode.
+
+4.3.3. K-Gram and Hashing
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+
+// Class KGram saves the starting and ending position
+// of the k-gram in the program code file
+public class KGram {
+private final String str;
+private int hash;
+private final int start;
+private final int end;
+// Constructor
+public KGram(String str, int start, int end) {
+this.str = str;
+//hashing the string
+this.hash = str.hashCode();
+this.start = start;
+this.end = end;
+}
+// Getter functions
+public String getStr() {
+return str;
+}
+public int getHash() {
+return hash;
+}
+
+23
+
+public int
+return
+}
+public int
+return
+}
+
+24
+25
+26
+27
+28
+29
+30
+
+getStart() {
+start;
+getEnd() {
+end;
+
+}
+
+Figure 4.5.: Class KGram
+Figure 4.5 shows the implemented KGram class, which is also directly performing the
+hashing step. For every k-gram a class is created, where the hash, k-gram value, start
+
+19
+
+4. Implementation
+and end position of it in the program code file is saved. The position information is
+mandatory so that we are able to map the k-gram to its location in the original file. Thus,
+this implementation can mark the found matches in the output for the user. Hashing the
+k-gram is done with the Java default hashcode function.
+
+4.3.4. Build Windows and Select Fingerprints
+/**
+* Code snippet to build windows and select fingerprints by
+* calling a function to get the minimum of an int array
+* hashList contains all k-gram hash values
+*/
+// Variable saves index of the last selected fingerprint
+int minLocation;
+// Variable saves the index of minimum hash in the current window
+int location=0;
+// Loop for defining the starting position of a window with variable x
+// x must be smaller than length of hashList-windowSize
+for (int x = 0; x < hashList.size() - windowSize; x++) {
+// Loop builds the window by taking the starting position x
+// and saves in every iteration the hash value in windowArray
+for (int j = 0, k = x; j < windowSize; j++, k++) {
+windowArray[j] = hashList.get(k);
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+
+}
+// Calls a function to find the minimum hash
+location = x + windowClass.indexOfMin(windowArray);
+// Checks if minimum hash was selected before as a fingerprint
+// If not, select hash as a fingerprint
+if (location != minLocation) {
+// Saves hash as a fingerprint
+fingerprintList.add(getMinValue(windowArray));
+minLocation = location;
+}
+
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+
+}
+
+28
+
+Figure 4.6.: Code snippet for building windows and selecting fingerprints
+Figure 4.6 contains the code for building windows and selecting fingerprints. For that,
+it uses the functions shown in the Appendix Functions, which select the minimum value
+and the corresponding index from an integer array. The course of actions in Figure 4.6
+is first to build a window, select the minimum value and save it as a fingerprint unless
+it was not chosen before. Then, the next window is built and this sequence of actions is
+repeated until the last window is reached.
+
+20
+
+4.3. Workflow
+
+4.3.5. Compare Fingerprints
+
+Figure 4.7.: Fingerprint comparison
+
+This step requires two sets of fingerprints of files that should be compared. Figure 4.7
+presents how the comparison of fingerprints is done. It is not necessary for the comparison
+that the sets have the same number of selected hashes. Each hash of a set is compared
+with each hash of the other set.
+
+21
+
+4. Implementation
+
+4.3.6. Output
+For every compared pair of files, where at least one match occurred, an output is generated. The output is in the form of an HTML page, which contains the content of
+the compared files, where matches are marked. As a result, the user can analyze found
+matches for source code or bytecode to decide if there is a plagiarism case. Figure 4.8
+shows an output example of found matches in two source code files, where matches are
+marked red.
+
+Figure 4.8.: Found matches example
+
+4.4. Implementation Details
+In the tokenization step, ANTLR (ANother Tool for Language Recognition) was used as
+a parser and lexer generator. A lexer and parser are used to remove irrelevant features
+from the files that should be compared. Therefore, a grammar was needed for the implementation language of the files because ANTLR is generating the lexer and parser from
+the given grammar. The implemented copy-detection tool is limited to the comparison
+of Java files. The grammar for Java was provided by ANTLR [5]. We used the ANTLR
+version 3 and Java version 1.8.0 for the implementation. As an external library, only the
+commons-io-2.5 library from Apache was used.
+
+22
+
+5. Experiments
+This chapter reports our experience with the implemented copy-detection tool of Chapter
+4 by testing the algorithm on 32 test files. First, four goals will be defined and then our
+test runs will be described. The results of our test runs will help us answer the research
+questions, presented in Chapter 1.
+
+5.1. Goals
+The goals for our experiments are derived from the research questions, shown in Chapter 1, and the assumption that using the winnowing algorithm will imply that all relevant
+similarities will be found and that plagiarism between files is traceable in source code and
+bytecode. The following goals are defined for the experiments:
+1. Find all similarities in the program code, that are not smaller than the noise threshold
+k.
+2. Find the same number of matches for source code and bytecode.
+3. For each match detected in the bytecode a corresponding match can be found in
+source code and vice versa.
+4. The measured density equals the expected density.
+These goals are important for the evaluation of the test runs. For every test run, it will
+be described if this goals were satisfied. Then, we will have a look at the false-positive
+rate.
+
+5.2. Test Set
+For the test runs, 32 Java files are used. 21 of them were taken from the JPlag homepage [1]. JPlag is a copy-detection tool like MOSS but implemented with another algorithm than winnowing. The tool is widely used for plagiarism detection and therefore we
+decided to take the free accessible test data provided on their homepage. These files only
+use the Java Standard Library, which is an important requirement of this implementation.
+Nevertheless, the test set should be bigger. The JPlag homepage only provided us 21
+files. Therefore, we added eleven other test files, which were programmed by us or taken
+from the internet. The source of every test file is added as a comment in the corresponding file. We used only the Java Standard Library and placed similarities between our own
+programmed files. For the test runs, only the source code files are needed. The Java
+class files, which contain the bytecode, are generated with the compilation of the source
+code files. All similarities between the 32 test files are known to us, which makes it easy
+to analyze the HTML pages to see if all plagiarism cases were found. The test files are
+in average 5300 non-whitespace characters long.
+
+23
+
+5. Experiments
+
+5.3. Test Run
+Overall, three test runs were made. We used different values for the parameters wbc , kbc ,
+wsc and ksc in the test runs in order to find optimal values for the variables by evaluating
+if the test results satisfied the defined goals. Every file of the test set was compared to all
+other elements. So, 32 test files produce 496 comparisons for each bytecode and source
+code. A found match is returned if similarities between two files exist. Furthermore, our
+tool generates for each found match an HTML page where the similarities are marked,
+which need to be analyzed by the user. In total there are 102 matches. In Chapter 4,
+an explanation was given why the k-gram length for bytecode and source code needs to
+be at least 25. We expect that most matches for values smaller than 25 are likely to be
+coincidental matches. Therefore, the first test run had the value 30 for ksc . For bytecode
+comparison, strings of 200 characters were hashed for the first test run. The chosen
+parameters are based on the test results in the Appendix Results. They show that for
+kbc < 150 too many matches are found and for ksc > 75 too few matches are found.
+
+5.3.1. First Test Run
+For source code, strings of 30 characters were hashed and the window length was set to
+20. The length of a k-gram was set to 200 and windows of 60 hashes were built. The
+measured density for both was near the expected density, but nevertheless with a small
+difference, which was smaller for source code than for bytecode, as can be seen in
+Tables 5.1 and 5.2.
+From 496 file comparisons, the algorithm found 206 matches for source code and 158
+have been found for the bytecode. After analyzing the generated HTML pages of the
+found matches, all plagiarisms were found. Still, the false-positive rate was high. For the
+source code, about 104 found matches were irrelevant because the similarities were only
+typical Java language constructs like a try-catch block and therefore marked as a found
+match. The false-positive rate was smaller for bytecode, where about 60 found matches
+are irrelevant matches, however with 48 less found matches in total.
+
+Table 5.1.: Source code (k=30, w=20)
+hashes computed
+76998
+fingerprints selected 7330
+measured density
+0.09519
+expected density
+0.09523
+matches found
+206
+false positives
+104
+
+24
+
+5.3. Test Run
+
+Table 5.2.: Bytecode (k=200, w=60)
+hashes computed
+333981
+fingerprints selected 10868
+measured density
+0.0325
+expected density
+0.0328
+matches found
+158
+false positives
+56
+
+5.3.2. Second Test Run
+Due to the high false-positive rate in the first test run, the variables were given larger
+values. Therefore, bytecode comparison had windows of length 210 and 55 characters
+in every k-gram. For source code, strings of 40 characters were hashed and the window
+length was set to 23, which is shown in Tables 5.3 and 5.4.
+For both types of code, the difference between measured and expected density increased
+compared to the first test run. For source code, we now had a difference of 0.001 and
+0.0005 for bytecode. The number of found matches decreased for both. 175 matches
+were found for source code and 145 matches for bytecode. Similarly, the false-positive
+rate decreased. For source code, there were 30 false-positive found matches less and for
+bytecode 10 less. But a high number of false-positive cases for source code and bytecode
+remained. However, all cases of plagiarism were found for both types of code.
+
+Table 5.3.: Source code (k=40, w=23)
+hashes computed
+76678
+fingerprints selected 6454
+measured density
+0.084
+expected density
+0.083
+matches found
+175
+false positives
+73
+
+Table 5.4.: Bytecode (k=210, w=55)
+hashes computed
+333661
+fingerprints selected 11751
+measured density
+0.0352
+expected density
+0.0357
+matches found
+145
+false positives
+43
+
+25
+
+5. Experiments
+
+5.3.3. Third Test Run
+In the last test run, the value of k-gram and window length was once again increased,
+due to the high false-positive rate in the previous two experiments. wbc = 50, kbc = 205,
+wsc = 25, and ksc = 50 were chosen as parameters.
+Still, a small difference between expected and measured density existed in both types of
+code, but this difference was about 0.0002, both for source code and bytecode. Furthermore, found matches decreased for both and the number of found matches for bytecode
+had surpassed the number of found matches for source code. Bytecode comparison found
+150 matches, while the source code comparison found 122 matches.
+Additionally, there are fewer false-positive cases, due to the larger values for the parameters. However, not all plagiarism cases were found for source code. Three matches,
+which were found in the last two test runs, have not been found in the current one, even
+though, they were real plagiarism cases and not only typical Java language constructs
+such as a try-catch block.
+Table 5.5.: Source code (k=50, w=25)
+hashes computed
+76358
+fingerprints selected 5857
+measured density
+0.0767
+expected density
+0.0769
+matches found
+122
+false positives
+23
+
+Table 5.6.: Bytecode (k=205, w=50)
+hashes computed
+333821
+fingerprints selected 13027
+measured density
+0.0390
+expected density
+0.0392
+matches found
+150
+false positives
+48
+
+5.4. Evaluation
+The three test runs are evaluated by assessing how well the defined goals were met. The
+first goal was met by all three test run results. All similarities in bytecode and source code
+were found when their length was bigger than the noise threshold k. Nevertheless, finding
+an appropriate k was a problem. For big k values, it is less likely that coincidental matches
+will be found. Nonetheless, relevant matches shorter than this threshold would be ignored.
+The influence of the parameter choices is very big on the test results. Choosing large or
+
+26
+
+5.4. Evaluation
+small values for the parameters w or k can lead to completely different results. This
+is a problem of the winnowing algorithm in general and not only of our implementation
+that the results of the algorithm depend too much on the right parameter choices. Also,
+there is no guideline for the user to choose the right values. Therefore, the parameter
+choices depend mostly on the experience of the user as a programmer, which is a negative
+aspect because less experienced users would have a problem to find the right values. For
+example, in the first two test runs, all relevant similarities were found but after increasing
+k from 40 to 50, three relevant matches were not found. Additionally, the false-positive
+rate was high. It decreased with increased values for the parameters but even so, many
+similarities were only Java language constructs.
+Furthermore, the number of found matches for source code and bytecode was not equal
+in any test run. In the first two experiments, there were more found matches for source
+code and in the third test run, more matches were found for bytecode. This is the result
+of using different parameters for source code and bytecode due to the different syntax
+and length of the instructions. Thus, the third goal was only partly reached. In the first
+two test runs, the matches in bytecode were also found in source code and in the third
+experiment all detected similarities in source code had a corresponding found similarity in
+bytecode.
+The last defined goal was achieved in every test run. The measured density was always
+very close to the expected one, with small differences that can be ignored. Another aspect
+of the implemented copy-detection tool is the runtime. A test run with 32 files, which
+includes 496 comparisons for bytecode and 496 for source code, takes about 45 seconds.
+Still, improvement must be achieved, so that the copy-detection tool can be used for
+larger test sets without taking too much time. The improvement will be discussed in
+Chapter 6.
+Finally, not all goals were fulfilled but in the first two test runs all plagiarism cases
+were found and the measured density was always close to the predicted one. The problem
+of finding appropriate values for the different parameters needs to be solved so that the
+same matches are found for both types of code and their number is the same. An advise
+for the right parameter choices in Java is 25 < ksc < 50, 15 < wsc < 30, 200 ≤ kbc ,
+and 50 ≤ wbc . This advise is based on our experience with the test set presented in
+Section 5.2.
+
+27
+
+6. Conclusion and Future Work
+The main goal was to implement a copy-detection tool based on the winnowing algorithm
+for source code and binary code and then to analyze and compare the performance of the
+implementation on the different types of code.
+Using the winnowing algorithm guarantees that the desirable properties noise suppression, insensitivity and position independence, presented in Chapter 2, are satisfied.
+Therefore, the expectation was to find all plagiarism attacks, except attacks where data
+types are changed or control structures are replaced with equivalent structures.
+During the implementation process, the main goal was more specifically described as
+finding similarities for Java source code and Java bytecode with the implemented copydetection tool because it was necessary to decide for which programming language the
+tool should detect plagiarism since a language’s grammar is needed in the tokenization
+step.
+It would be possible to extend the set of programming languages, for which the implementation is able to detect similarities. As of now, the set only includes Java. Nevertheless, this would take too much effort as a language grammar would need to be defined,
+binary code and source code would have to be analyzed in order to define rules in the
+tokenization step.
+The analysis of the test results in Chapter 5 shows that the implementation finds every
+similarity smaller than the defined noise threshold k in both types of code. However, the
+problem is to find appropriate values for the parameters w and k, so that the number
+of coincidental matches becomes as low as possible, all non-coincidental similarities are
+detected and the measured density equals the expected density.
+Furthermore, the number of matches were not equal between source code and bytecode, which could be caused by choosing the wrong values for the parameters. Finally,
+the answer to the research questions presented in Chapter 1 is that all types of plagiarism
+can be detected with the implemented tool if the match is longer than our noise threshold
+k except plagiarism attacks where data types are changed or where control structures are
+replaced with similar structures. Also in the experiments, there was a relation between
+found matches in source code and bytecode. Most detected similarities in bytecode had
+a corresponding found similarity in source code or vice versa.
+For future work, a few aspects remain open. First, the winnowing algorithm needs to
+be implemented more efficiently, as partly shown in Chapter 3. Therefore, a solution is
+needed such that the runtime and memory consumption decrease but at the same time
+no functionality is lost. The reason for the current runtime is an inefficient hash function.
+This could be improved by using the Rabin-Karp algorithm. Furthermore, the implementation always compares every hash in a window with every other instead of using the fact
+that the minimum value from a preceding window is usually within the current one such
+that in most cases a single comparison is sufficient to find the minimum hash.
+Large memory consumption is caused by the user-friendly output in form of an HTML
+page, where all matches are marked. For this kind of output, it is necessary to save every
+information during the tokenization of a file so that it is possible to give a k-gram the
+
+29
+
+6. Conclusion and Future Work
+starting and ending position of the corresponding non-transformed strings.
+Another aspect of improvement is the grouping of Java bytecode instructions. With
+this, similar bytecode instructions are categorized into a group according to their functionality. For example, the instructions aload_0, aload_1, aload_2 and aload_3 are
+similar to aload, which loads a reference onto the stack from a local variable pool. The
+difference between these bytecodes is only whether it has an operand or not. In this
+example, the instructions should be grouped and all similar instructions in the class file
+should be replaced by the group label. Through this improvement, the efficiency should
+increase for bytecode comparison.
+Finally, by expanding the set of programming languages in which similarities should
+be detected, the implementation would not be restricted to Java files. Furthermore, the
+restriction of the Java files to the Java Standard Library for the current implementation
+needs to be removed.
+
+30
+
+Bibliography
+
+Bibliography
+[1] Institute for Program Structures and Data Organization. What is JPlag, July 2017.
+Retrieved: July 13, 2017 from https://jplag.ipd.kit.edu/.
+[2] Jeong-Hoon Ji, Gyun Woo, and Hwan-Gue Cho. A plagiarism detection technique
+for java program using bytecode analysis. In In Third International Conference on
+Convergence and Hybrid Information Technology, volume 1, pages 1092–1098. IEEE,
+2008.
+[3] Richard M. Karp and Michael O. Rabin. Efficient randomized pattern-matching algorithms. IBM Journal of Research and Development, 31(2):249–260, March 1987.
+[4] Udi Manber. Finding similar files in a large file system. In USENIX Winter 1994
+Technical Conference, pages 1–10, 1994.
+[5] Terence Parr. The definitive ANTLR 4 reference. Pragmatic Bookshelf, 2013.
+[6] Saul Schleimer, Daniel S. Wilkerson, and Alex Aiken. Winnowing: Local algorithms
+for document fingerprinting. In Proc. 2003 ACM SIGMOD International Conference
+on Management of Data, pages 76–85, San Diego, CA, June 2003.
+[7] Xiaoming Yu, Yue Liu, and Hongbo Xu. Density analysis of winnowing on non-uniform
+distributions. In Advances in Data and Web Management, Joint 9th Asia-Pacific Web
+Conference, APWeb 2007, and 8th International Conference on Web-Age Information
+Management, WAIM 2007, Huang Shan, China, pages 586–593, 2007.
+
+31
+
+A. Functions
+1
+2
+3
+4
+5
+6
+
+/**
+* Function to return index of min value in an int array
+* @param a
+* @return
+*/
+public static int indexOfMin(int[] a)
+
+7
+8
+
+{
+// Variable for the index of minimum value
+int loc = 0;
+// Variable to save current minimum value
+int min = a[0];
+// Iterate through array
+for (int i = 1; i < a.length; i++) {
+// Checks if current array value is smaller or equal to
+// the last saved minimum value
+if (a[i] <= min) {
+min = a[i];
+loc = i;
+}
+}
+return loc;
+
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+
+}
+
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+
+/**
+* Function to return min value of an int array
+* @param numbers
+* @return
+*/
+public static int getMinValue(int[] numbers) {
+int minValue = numbers[0];
+for (int i = 1; i < numbers.length; i++) {
+if (numbers[i] <= minValue) {
+minValue = numbers[i];
+}
+}
+return minValue;
+}
+
+Figure A.1.: Functions for getting minimum value and corresponding index in an array
+
+33
+
+B. Results
+B.1. Bytecode
+
+Table B.1.: Bytecode (k=25, w=25)
+hashes computed
+339581
+fingerprints selected 25861
+measured density
+0.0761
+expected density
+0.0769
+matches found
+496
+false-positives
+394
+
+Table B.2.: Bytecode (k=50, w=50)
+hashes computed
+338781
+fingerprints selected 13046
+measured density
+0.0385
+expected density
+0.0392
+matches found
+441
+false-positives
+339
+
+Table B.3.: Bytecode (k=150, w=50)
+hashes computed
+335581
+fingerprints selected 13084
+measured density
+0.0390
+expected density
+0.0392
+matches found
+228
+false-positives
+126
+
+35
+
+B. Results
+
+B.2. Source Code
+Table B.4.: Source code (k=150, w=150)
+hashes computed
+73158
+fingerprints selected 928
+measured density
+0.0127
+expected density
+0.0132
+matches found
+6
+false-positives
+0
+
+Table B.5.: Source code (k=100, w=100)
+hashes computed
+74758
+fingerprints selected 1459
+measured density
+0.0195
+expected density
+0.0099
+matches found
+14
+false-positives
+0
+
+Table B.6.: Source code (k=75, w=75)
+hashes computed
+75558
+fingerprints selected 1949
+measured density
+0.0258
+expected density
+0.0263
+matches found
+21
+false-positives
+0
+
+36
+
+
