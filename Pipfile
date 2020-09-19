@@ -11,6 +11,7 @@ aiohttp = "*"
 selenium = "*"
 pandas = "*"
 ipykernel = "*"
+fingerprint = "*"
 
 [requires]
 python_version = "3.8"

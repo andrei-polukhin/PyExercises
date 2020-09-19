@@ -2,41 +2,75 @@ from fingerprint import Fingerprint
 from collections import Counter
 from pprint import pprint
 
-with open("./Unsorted/fingerprints/origin.txt", "r") as file:
-    origin = file.read()
 
-with open("./Unsorted/fingerprints/plagiarism.txt", "r") as file:
-    plagiarism = file.read()
+def check(origin, plagiarized):
+    with open(origin, "r") as file:
+        origin = file.read()
 
-text_length = min(len(origin.split()), len(plagiarism.split()))
+    with open(plagiarized, "r") as file:
+        plagiarism = file.read()
 
-if text_length < 60:
-    raise NotImplementedError("Compare texts with at least 60 words.")
+    text_length = min(len(origin.split()), len(plagiarism.split()))
 
-kgram = max(text_length // 21, 3)
-window = kgram - 1
-base = 11 if text_length < 250 else 23 if text_length < 600 else 101
-modulo = max(round(text_length * 10, -3), 1000)
+    if text_length < 60:
+        raise NotImplementedError("Compare texts with at least 60 words.")
 
-fprint = Fingerprint(kgram_len=kgram, window_len=window, base=base, modulo=modulo)
+    kgram = max(text_length // 21, 3)
+    window = kgram - 1
+    base = 11 if text_length < 250 else 23 if text_length < 600 else 101
+    modulo = max(round(text_length * 10, -3), 1000)
 
-first = fprint.generate(str=origin)
-second = fprint.generate(str=plagiarism)
+    fprint = Fingerprint(kgram_len=kgram, window_len=window, base=base, modulo=modulo)
 
-similar = [
-    x
-    for x in first
-    if x in second
-]
+    first = fprint.generate(str=origin)
+    second = fprint.generate(str=plagiarism)
 
-similar_grams = Counter([
-    element[0]
-    for element in first
-    for sec in second
-    if sec[0] == element[0]
-])
+    similar = [
+        x
+        for x in first
+        if x in second
+    ]
 
-print("Identical substring hashes:")
-pprint(similar)
-print("\nIdentical grams:")
-pprint(similar_grams)
+    similar_grams = Counter([
+        element[0]
+        for element in first
+        for sec in second
+        if sec[0] == element[0]
+    ])
+
+    print("Identical substring hashes:")
+    pprint(similar)
+    print("\nIdentical grams:")
+    pprint(similar_grams)
+
+
+if __name__ == "__main__":
+    print("--------THE FIRST CHECK--------")
+    try:
+        check(
+            "./Unsorted/fingerprints/origin.txt",
+            "./Unsorted/fingerprints/plagiarism.txt"
+        )
+        print("--------THE CHECK ON DIRECT PLAGIARISM--------")
+        check(
+            "./Unsorted/fingerprints/direct_source.txt",
+            "./Unsorted/fingerprints/direct_plagiarized.txt"
+        )
+        print("--------THE CHECK ON MOSAIC PLAGIARISM--------")
+        check(
+            "./Unsorted/fingerprints/mosaic_source.txt",
+            "./Unsorted/fingerprints/mosaic_plagiarized.txt"
+        )
+        print("--------THE CHECK ON CLOSE PARAPHRASING--------")
+        check(
+            "./Unsorted/fingerprints/paraphrase_source.txt",
+            "./Unsorted/fingerprints/paraphrase_plag.txt"
+        )
+    except FileNotFoundError:
+        check("origin.txt", "plagiarism.txt")
+        print("--------THE CHECK ON DIRECT PLAGIARISM--------")
+        check("direct_source.txt", "direct_plagiarized.txt")
+        print("--------THE CHECK ON MOSAIC PLAGIARISM--------")
+        check("mosaic_source.txt", "mosaic_plagiarized.txt")
+        print("--------THE CHECK ON CLOSE PARAPHRASING--------")
+        check("paraphrase_source.txt", "paraphrase_plag.txt")
