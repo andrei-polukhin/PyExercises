@@ -15,8 +15,8 @@ def check(origin, plagiarized):
     if text_length < 60:
         raise NotImplementedError("Compare texts with at least 60 words.")
 
-    kgram = max(text_length // 21, 3)
-    window = kgram - 1
+    window = max(text_length // 21, 3)
+    kgram = window - 1
     base = 11 if text_length < 250 else 23 if text_length < 600 else 101
     modulo = max(round(text_length * 10, -3), 1000)
 
