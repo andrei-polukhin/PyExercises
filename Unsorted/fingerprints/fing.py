@@ -18,7 +18,7 @@ def check(origin, plagiarized):
     window = max(text_length // 21, 3)
     kgram = window - 1
     base = 11 if text_length < 250 else 23 if text_length < 600 else 101
-    modulo = max(round(text_length * 10, -3), 1000)
+    modulo = max(round(text_length * 5, -3), 1000)
 
     fprint = Fingerprint(kgram_len=kgram, window_len=window, base=base, modulo=modulo)
 
