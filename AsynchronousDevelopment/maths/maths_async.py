@@ -17,14 +17,12 @@ async def get_numbers(*numbers):
 def main():
     before = time.time()
     loop = asyncio.get_event_loop()
-    numbers = [
-      1, 3, 6, 10, 16, 21, 420, 500, 3200, 12900, 11008
-    ]
+    numbers = [500, 3200, 12900, 31008]
     results = loop.run_until_complete(get_numbers(*numbers))
     for result in results:
         print(result)
     loop.close()
-    print(f"The time spent on maths with async is {time.time()-before}s")
+    print(f"The time spent on maths with async is {time.time()-before} secs.")
 
 
 if __name__ == "__main__":

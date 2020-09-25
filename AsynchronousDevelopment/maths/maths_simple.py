@@ -8,10 +8,10 @@ def calculate_number(number):
 
 def main():
     before = time.time()
-    numbers = [1, 3, 6, 10, 16, 21, 420, 500, 3200, 12900, 11008]
+    numbers = [500, 3200, 12900, 31008]
     for number in numbers:
         print(calculate_number(number))
-    print(f"The time spent for maths without async is {time.time()-before}s")
+    print(f"The time spent on maths without async is {time.time()-before} secs.")
 
 
 if __name__ == "__main__":
