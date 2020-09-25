@@ -18,7 +18,7 @@ def main():
     before = time.time()
     loop = asyncio.get_event_loop()
     numbers = [
-      1, 3, 6, 10, 16, 21, 420, 500, 3200, 12900, 23001
+      1, 3, 6, 10, 16, 21, 420, 500, 3200, 12900, 11008
     ]
     results = loop.run_until_complete(get_numbers(*numbers))
     for result in results:
