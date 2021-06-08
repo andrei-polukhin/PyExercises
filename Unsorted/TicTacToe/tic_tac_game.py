@@ -94,7 +94,7 @@ while True:
         game_over = check_win(massive, "o")
     if game_over:
         screen.fill(black)
-        font = pygame.font.SysFont("stxingkai", 80)
+        font = pygame.font.SysFont("Calibri", 80)
         rendered_text = font.render(game_over, True, white)
         text_rect = rendered_text.get_rect()
         text_x = (screen.get_width() - text_rect.width) / 2
