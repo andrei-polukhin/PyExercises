@@ -45,8 +45,6 @@ CREATE TABLE members (
 
 
 ALTER TABLE ONLY members
-      /* AZ: I would suggest {table}_fk_{field} */
-      /* AP: Yep, done. */
     ADD CONSTRAINT members_fk_recommendedby
       FOREIGN KEY (recommendedby)
       REFERENCES members(memid)
