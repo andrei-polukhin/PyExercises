@@ -383,7 +383,7 @@ CREATE VIEW booking_costs_today AS (
 STORED FUNCTIONS
 */
 
--- passing parameters
+/* #1: passing parameters */
 CREATE OR REPLACE PROCEDURE remove_member(
   member_id integer
 )
@@ -392,7 +392,6 @@ BEGIN
   DELETE FROM members WHERE memid = member_id;
   IF NOT FOUND THEN
       RAISE NOTICE 'No member with specified id found';
-      RETURN;
   END IF;
 COMMIT;
 END;
@@ -405,3 +404,40 @@ CALL remove_member(1); -- will remove
 -- checks
 SELECT memid FROM members;
 SELECT * FROM bookings WHERE memid = 1; -- no rows should be
+
+/* #2: working with variables, single-row return */
+CREATE OR REPLACE FUNCTION tr_clients_balances_events()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $$
+DECLARE
+  _events_id varchar;
+  _events_value jsonb;
+BEGIN
+  _events_id = CASE
+    WHEN NEW.balance <= 0 THEN 'clients.balance_zero'
+    ELSE 'clients.balance_notzero'
+    END;
+  
+  _events_value = jsonb_build_object(
+        'dt', NOW(),
+        'object_id', NEW.clients_id::varchar,
+        'events_id', _events_id
+      );
+
+  INSERT INTO
+    ex_events_queue (ex_events_id, data, object_id)
+    VALUES
+
+      (events_id,
+
+      jsonb_build_object(
+      'event', _events_value,
+      'data', '{}'::jsonb
+      ),
+
+      NEW.clients_id::varchar);
+
+  RETURN NEW;
+END;
+$$;
