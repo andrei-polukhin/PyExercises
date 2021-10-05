@@ -22,7 +22,7 @@ BEGIN
     ex_events_queue (ex_events_id, data, object_id)
     VALUES
 
-      (events_id,
+      (_events_id,
 
       jsonb_build_object(
       'event', _events_value,
