@@ -1,10 +1,10 @@
 /* #1: passing parameters */
 CREATE OR REPLACE PROCEDURE remove_member(
-  member_id integer
+  _member_id integer
 )
 AS $$
 BEGIN
-  DELETE FROM members WHERE memid = member_id;
+  DELETE FROM members WHERE memid = _member_id;
   IF NOT FOUND THEN
       RAISE NOTICE 'No member with specified id found';
   END IF;
