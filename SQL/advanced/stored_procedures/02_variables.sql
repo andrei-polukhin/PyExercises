@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION get_exchange_rate(_from_currency varchar, _to_currenc
 AS $$
     DECLARE
         _exchange_rate numeric;
+    BEGIN
 
     -- this is pretty abstract, but I remember we have currencies as a table in our billing system, so it should be like this (?!)
     SELECT
@@ -21,6 +22,7 @@ AS $$
         AND dt = _dt;
 
     RETURN _exchange_rate;
+    END;
 $$;
 
 -- RETURNS %rowtype
