@@ -39,7 +39,6 @@ AS $$
     WHERE
         code = _code;
 
-    RETURN _selected_code;
     END;
 $$;
 
