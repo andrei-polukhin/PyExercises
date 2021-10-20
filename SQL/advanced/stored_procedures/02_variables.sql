@@ -26,7 +26,7 @@ $$;
 
 -- RETURNS %rowtype
 CREATE OR REPLACE FUNCTION get_code_info(_code varchar)
-    RETURNS TABLE codes  -- more than several codes meet this requirement :)
+    RETURNS codes%rowtype
     LANGUAGE plpgsql
 AS $$
     BEGIN
@@ -37,25 +37,18 @@ AS $$
     FROM
         codes  -- again abstract
     WHERE
-        code = _code;
+        code = _code
+    LIMIT 1;
 
     END;
 $$;
 
 -- OUT...
-CREATE TYPE main_rate_info AS (
-    rate_per_min numeric,
-    pay_setup integer,
-    grace_volume integer,
-    min_interval integer
-);
-
 CREATE OR REPLACE FUNCTION get_rate_main_info(
     IN _code varchar, IN _rate_tables_id varchar,
     OUT rate_per_min numeric, OUT pay_setup integer, OUT grace_volume integer, OUT min_interval integer
 )
 LANGUAGE plpgsql
-RETURNS main_rate_info
 AS $$
     RETURN QUERY
     SELECT
@@ -64,5 +57,6 @@ AS $$
         rates
     WHERE
         rate_tables_id = _rate_tables_id
-        AND code = _code;
+        AND code = _code
+    LIMIT 1;
 $$;
