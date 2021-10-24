@@ -24,54 +24,71 @@ AS $$
     END;
 $$;
 
--- RETURNS %rowtype
-CREATE OR REPLACE FUNCTION get_code_info(_code varchar)
-    RETURNS record
+-- OUT...
+CREATE OR REPLACE FUNCTION get_code_info(
+    IN _code varchar,
+    IN _code_decks_id integer,
+    OUT name varchar, OUT country varchar
+)
     LANGUAGE plpgsql
 AS $$
     DECLARE
-        _ret record;
+        _code_row record;
 
     BEGIN
 
     SELECT
         *
-    INTO
-        _ret
+    INTO STRICT
+        _code_row
     FROM
         codes
     WHERE
         code = _code
-    LIMIT 1;
+        AND code_decks_id = _code_decks_id;
 
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'No such code';
-    END IF;
+    EXCEPTION
+        WHEN no_data_found THEN
+            RAISE NOTICE 'No codes found!';
+            RETURN;
+        WHEN too_many_rows THEN
+            RAISE NOTICE 'Several codes satisfy specified parameters!';
+            RETURN;
 
-    RETURN _ret;
+    name := _code_row.name;
+    country := _code_row.country;
+
     END;
 $$;
 
--- OUT...
+-- SETOF...
 CREATE OR REPLACE FUNCTION get_rate_main_info(
     IN _code varchar, IN _rate_tables_id integer,
-    OUT rate_per_min numeric, OUT pay_setup integer, OUT grace_volume integer, OUT min_interval integer
-)
+    OUT rate_per_min numeric, OUT pay_setup integer, OUT grace_volume integer, OUT pay_interval integer
+) RETURNS SETOF record
 LANGUAGE plpgsql
 AS $$
-    BEGIN
-    SELECT INTO
-        rate_per_min, pay_setup, grace_volume, min_interval
-    FROM
-        rates
-    WHERE
-        rate_tables_id = _rate_tables_id
-        AND code = _code
-    LIMIT 1;
+    DECLARE
+        rec record;
 
-    IF NOT FOUND THEN
-        RETURN;
-    END IF;
+    BEGIN
+
+    FOR rec IN (
+        SELECT
+            *
+        FROM
+            rates
+        WHERE
+            rate_tables_id = _rate_tables_id
+            AND code = _code
+        ORDER BY id
+    ) LOOP
+        rate_per_min := rec.rate_per_min;
+        pay_setup := rec.pay_setup;
+        grace_volume := rec.grace_volume;
+        pay_interval := rec.pay_interval;
+        RETURN NEXT;
+    END LOOP;
 
     END;
 $$;
