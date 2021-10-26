@@ -75,9 +75,9 @@ BEGIN
     FROM
       rates
     WHERE
-      rate_tables_id = _rate_tables_id
-      AND code = _code
-    ORDER BY id';
+      rate_tables_id = '||_rate_tables_id||
+      'AND code = '||_code||
+    'ORDER BY id;';
 
   FOR rec IN EXECUTE query LOOP
     rate_per_min := rec.rate_per_min;
