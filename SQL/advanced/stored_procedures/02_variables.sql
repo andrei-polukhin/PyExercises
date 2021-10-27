@@ -75,11 +75,11 @@ BEGIN
     FROM
       rates
     WHERE
-      rate_tables_id = '||_rate_tables_id||'
-      AND code = '||_code||'
+      rate_tables_id = %s
+      AND code = ''%s''
     ORDER BY id;';
 
-  FOR rec IN EXECUTE query LOOP
+  FOR rec IN EXECUTE format(query, _rate_tables_id, _code) LOOP
     rate_per_min := rec.rate_per_min;
     pay_setup := rec.pay_setup;
     grace_volume := rec.grace_volume;
