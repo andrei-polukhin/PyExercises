@@ -1,3 +1,1 @@
-"""
-Code Design - Defensive Programming: Part #1
-"""
+"""Code Design - Defensive Programming: Part #1"""
