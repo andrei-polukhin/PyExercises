@@ -4,6 +4,8 @@ Caching engine which will store key values according to specified duration
 
 from datetime import datetime, timedelta
 
+import pytz
+
 
 class CachingEngine:
     """Caching engine unvalidating keys after a given duration"""
@@ -17,7 +19,7 @@ class CachingEngine:
 
         self.cache[key] = {
             'value': value,
-            'expires': datetime.now() + timedelta(seconds=duration)
+            'expires': datetime.now(pytz.utc) + timedelta(seconds=duration)
         }
 
     def get(self, key):
@@ -25,7 +27,7 @@ class CachingEngine:
         Retrieve a given key if it exists and did not expire
         """
 
-        if key in self.cache and self.cache[key]['expires'] >= datetime.now():
+        if key in self.cache and self.cache[key]['expires'] >= datetime.now(pytz.utc):
             return self.cache[key]['value']
 
         return None
