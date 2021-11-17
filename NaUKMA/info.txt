@@ -1,0 +1,1 @@
+This folder contains chosen exercises from my CS studies at NaUKMA i liked doing.
