@@ -10,7 +10,10 @@ import pytz
 class CachingEngine:
     """Caching engine unvalidating keys after a given duration"""
 
-    cache = {}
+    def __init__(self) -> None:
+        """Create storage"""
+
+        self.cache = {}
 
     def add(self, key, value, duration):
         """
@@ -49,6 +52,9 @@ if __name__ == '__main__':
 
     engine.add('key', 'new-value', 2)
     assert engine.get('key') == 'new-value'  # got updated!
+
+    another_engine = CachingEngine()
+    assert another_engine.cache == {}  # new caching engine has no data
 
     # misused 'duration' will give TypeError
     # mutable 'key' will give TypeError
