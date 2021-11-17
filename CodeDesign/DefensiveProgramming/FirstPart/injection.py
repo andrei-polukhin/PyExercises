@@ -6,19 +6,19 @@ Pull information from a DB about a user via the correct and wrong approaches.
 
 from .pgsql import pgsql
 
-SQL = "SELECT * FROM users WHERE name = %s AND password = %s"
-
 
 def wrong_approach(name, password):
     """Pull information in a way allowing a SQL injection"""
 
-    return pgsql().run(SQL % (name, password))  # never do direct %
+    sql = "SELECT * FROM users WHERE name = '%s' AND password = '%s'"
+    return pgsql().run(sql % (name, password))  # never do direct %
 
 
 def correct_approach(name, password):
     """Pull information in a correct way"""
 
-    return pgsql().run(SQL, (name, password))  # library will handle
+    sql = "SELECT * FROM users WHERE name = %s AND password = %s"
+    return pgsql().run(sql, (name, password))  # library will handle
 
 
 if __name__ == '__main__':
