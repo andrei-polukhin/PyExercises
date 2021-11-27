@@ -3,15 +3,15 @@ Difference between BEFORE and AFTER triggers
 *******************************************/
 
 DROP FUNCTION IF EXISTS
-  tr_delete_client, tr_search_name
+  tr_delete_client, tr_search_name,
+  tr_clients_balances, tr_clients_standardize_name
 CASCADE;
 
 /********************
-BEFORE is used when we need to validate data before any action on it
-
-For example, we want to check if we can delete some rows from the table.
-AFTER trigger cannot be used because we've already deleted the rows for us.
+BEFORE triggers
 ********************/
+
+-- efficiency win (BEFORE just saves time not to do delete)
 CREATE FUNCTION tr_delete_client()
   RETURNS trigger
   LANGUAGE plpgsql
@@ -19,20 +19,8 @@ AS $$
 /**
 Check client's status before deletion
 */
-DECLARE
-  _clients_status varchar;
-
 BEGIN
-  SELECT
-    status
-  INTO STRICT
-    _clients_status
-  FROM
-    clients
-  WHERE
-    id = OLD.id;
-
-  IF _clients_status = 'VIP' THEN
+  IF OLD.status = 'VIP' THEN
     RAISE EXCEPTION 'The precious client % cannot leave our company!', OLD.id;
   END IF;
 
@@ -46,13 +34,40 @@ CREATE TRIGGER client_tr_delete
   EXECUTE PROCEDURE tr_delete_client();
 
 
-/********************
-AFTER triggers are mostly used to update data due to the changes after committed operation
+-- the need for modification before UPDATE / INSERT
+CREATE FUNCTION tr_clients_standardize_name()
+  RETURNS trigger
+  LANGUAGE plpgsql
+AS $$
+DECLARE
+  _name_array text[];
 
-For example, we have search presented by all the ts_vector, ts_query, ts_rank malakry.
-All the ts_vectors are stored in a separate table. Although the whole operation: action + trigger
-is presented in a transaction, we have to insert into "search" table AFTER because of changes in data.
+BEGIN
+  _name_array := string_to_array(NEW.name, ' ');
+
+  -- check for format
+  IF array_length(_name_array, 1) <> 2 THEN
+    RAISE EXCEPTION 'Wrong name: %', NEW.name;
+  END IF;
+
+  -- format the name correctly
+  NEW.name := initcap(NEW.name);
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER clients_tr_standardize_name
+  BEFORE INSERT OR UPDATE OF name ON clients
+  FOR EACH ROW
+  EXECUTE PROCEDURE tr_clients_standardize_name();
+
+
+/********************
+AFTER triggers
 ********************/
+
+-- more logical to do extra changes AFTER action
 CREATE FUNCTION tr_search_name()
   RETURNS trigger
   LANGUAGE plpgsql
@@ -99,3 +114,27 @@ CREATE TRIGGER search_name_tr_update
   AFTER DELETE OR UPDATE OR INSERT ON clients
   FOR EACH ROW
   EXECUTE PROCEDURE tr_search_name();
+
+
+-- FK constraint: only AFTER is allowed
+CREATE FUNCTION tr_clients_balances()
+  RETURNS trigger
+  LANGUAGE plpgsql
+AS $$
+/**
+Create a balance for a newly created client
+*/
+BEGIN
+  INSERT INTO
+    clients_balances(clients_id, balance)
+  VALUES
+    (NEW.id, 0.00);
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER clients_tr_balances
+  AFTER INSERT ON clients
+  FOR EACH ROW
+  EXECUTE PROCEDURE tr_clients_balances();

@@ -33,7 +33,8 @@ CREATE TABLE clients_balances(
 ALTER TABLE clients_balances
   ADD CONSTRAINT clients_id_fk_clients
   FOREIGN KEY (clients_id)
-  REFERENCES clients(id);
+  REFERENCES clients(id)
+  ON UPDATE CASCADE ON DELETE CASCADE;
 
 CREATE TABLE audit_trail(
   id serial PRIMARY KEY,
