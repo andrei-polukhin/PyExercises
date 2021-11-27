@@ -95,9 +95,10 @@ BEGIN
     UPDATE
       search_clients
     SET
-      ts = _ts
+      ts = _ts,
+      object_id = NEW.id
     WHERE
-      object_id = NEW.id;
+      object_id = OLD.id;
 
   ELSEIF TG_OP = 'INSERT' THEN
     INSERT INTO
