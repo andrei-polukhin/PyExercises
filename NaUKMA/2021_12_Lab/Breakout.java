@@ -1,11 +1,3 @@
-/**
- * File: Breakout.java
- * @author Andrew Polukhin
- * @email andrii.polukhin@ukma.edu.ua
- * ----------------------------------
- * This file will eventually implement the game Breakout for the second lab.
- */
-
 import acm.graphics.*;
 import acm.program.*;
 import acm.util.*;
@@ -13,12 +5,7 @@ import acm.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/**
- * Implements the Breakout game
- * @author Andrew Polukhin
- * */
 public class Breakout extends GraphicsProgram {
-    /** Width and height of application window in pixels */
     public static final int APPLICATION_WIDTH = 400;
     public static final int APPLICATION_HEIGHT = 600;
 
@@ -26,55 +13,43 @@ public class Breakout extends GraphicsProgram {
     private static final int WIDTH = APPLICATION_WIDTH;
     private static final int HEIGHT = APPLICATION_HEIGHT;
 
-    /** Dimensions of the paddle */
     private static final int PADDLE_WIDTH = 60;
     private static final int PADDLE_HEIGHT = 10;
 
     /** Offset of the paddle up from the bottom of the lowest brick */
     private static final int PADDLE_Y_OFFSET = 30;
 
-    /** Number of bricks per row */
     private static final int NBRICKS_PER_ROW = 10;
 
-    /** Number of rows of bricks */
     private static final int NBRICK_ROWS = 10;
 
-    /** Separation between bricks */
     private static final int BRICK_SEP = 4;
 
-    /** Width of a brick */
     private static final int BRICK_WIDTH =
         (WIDTH - (NBRICKS_PER_ROW - 1) * BRICK_SEP) / NBRICKS_PER_ROW;
 
-    /** Height of a brick */
     private static final int BRICK_HEIGHT = 8;
 
-    /** Radius of the ball in pixels */
     private static final int BALL_RADIUS = 10;
 
-    /** Offset of the top brick row from the top */
     private static final int BRICK_Y_OFFSET = 70;
 
-    /** Number of turns */
     private static final int NTURNS = 3;
 
     /** Ball velocity */
     private double vx, vy;
 
-    /** Random number generator for vx */
+    /** Random number generator for velocity */
     private final RandomGenerator rgen = RandomGenerator.getInstance();
 
-    /** Animation delay or pause time between ball moves */
     private static final int DELAY = 10;
 
     /** Distinct paddle and ball objects */
     private GRect paddle;
     private GOval ball;
 
-    /** Number of untouched bricks */
     private int brickCounter = NBRICKS_PER_ROW * NBRICK_ROWS;
 
-    /** Main run method */
     public void run() {
         for (int i=0; i < NTURNS; i++) {
             setWorld();
@@ -99,9 +74,6 @@ public class Breakout extends GraphicsProgram {
         }
     }
 
-    /**
-     * Set up game, game objects: bricks, paddle and ball and main game handlers
-     * */
     private void setWorld() {
         this.setSize(WIDTH, HEIGHT);
         drawBricks();
@@ -113,14 +85,10 @@ public class Breakout extends GraphicsProgram {
         brickCounter = NBRICKS_PER_ROW * NBRICK_ROWS;
     }
 
-    /**
-     * Draw all the bricks for the game
-     * */
     private void drawBricks() {
-        // the first loop is for rows, the second one is for columns
         for (int row = 0; row < NBRICK_ROWS; row++) {
             for (int column = 0; column < NBRICKS_PER_ROW; column++) {
-                // let's calculate the abscissa and the ordinate of the
+                // let's calculate the abscissa and the ordinate of the brick
 
                 double	x = (
                     // start at the center width
@@ -161,13 +129,9 @@ public class Breakout extends GraphicsProgram {
         }
     }
 
-    /**
-     * Draw the paddle for the game
-     * */
     private void drawPaddle() {
         // default is the middle of the screen
         double x = (double) getWidth() / 2 - (double) PADDLE_WIDTH / 2;
-        // the paddle height does not change;
         // subtracting paddle offset and height is vital for spacing
         double y = getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 
@@ -176,14 +140,9 @@ public class Breakout extends GraphicsProgram {
         add(paddle);
     }
 
-    /**
-     * Enable moving paddle by mouse moves
-     * @param e the moved mouse
-     * */
     public void mouseMoved(MouseEvent e) {
-        // we track the middle point of the paddle;
-        // we subtract the half a paddle's width if we are out of the screen
-        // to prevent paddle going off the screen
+        /* subtract the half a paddle's width if we are out of the screen
+        to prevent paddle going off the screen */
         if ((e.getX() > PADDLE_WIDTH / 2) && (e.getX() < getWidth() - PADDLE_WIDTH / 2)) {
             paddle.setLocation(
             e.getX() - (double) PADDLE_WIDTH / 2,
@@ -193,10 +152,6 @@ public class Breakout extends GraphicsProgram {
 
     }
 
-
-    /**
-     * Draw ball for the game
-     * */
     private void drawBall() {
         double x = (double) getWidth() / 2 - BALL_RADIUS;
         double y = (double) getHeight() / 2 - BALL_RADIUS;
@@ -206,9 +161,6 @@ public class Breakout extends GraphicsProgram {
         add(ball);
     }
 
-    /**
-     * Play the game per se: wait for click, get ball's velocity and move ball
-     * */
     private void playGame() {
         waitForClick();
         getBallVelocity();
@@ -227,9 +179,6 @@ public class Breakout extends GraphicsProgram {
         }
     }
 
-    /**
-     * Get ball's velocity
-     * */
     private void getBallVelocity() {
         vy = 4.0;
         vx = rgen.nextDouble(1.0, 3.0);
@@ -239,9 +188,6 @@ public class Breakout extends GraphicsProgram {
 
     }
 
-    /**
-     * Enable correct ball's movements
-     * */
     private void moveBall() {
         ball.move(vx, vy);
 
@@ -259,9 +205,11 @@ public class Breakout extends GraphicsProgram {
         // check for other objects
         GObject collider = getCollidingObject();
         if (collider == paddle) {
-            // 1) we need to make sure that the ball only bounces off the top part of the paddle;
-            // 2) we estimate the point to be greater or equal to the height at which the ball hits the paddle
-            // but less than the height where the ball hits the paddle minus 4.
+            /*
+            1) we need to make sure that the ball only bounces off the top part of the paddle;
+            2) we estimate the point to be greater or equal to the height at which the ball hits the paddle
+               but less than the height where the ball hits the paddle minus 4.
+            */
 
             if(
                 ball.getY() >= getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT - BALL_RADIUS * 2 &&
@@ -281,11 +229,6 @@ public class Breakout extends GraphicsProgram {
         pause (DELAY);
     }
 
-    /**
-     * Get correctly the object the paddle has touched,
-     * locate it correctly
-     * @return the found object
-     * */
     private GObject getCollidingObject() {
         if ((getElementAt(ball.getX(), ball.getY())) != null) {
             return getElementAt(ball.getX(), ball.getY());
@@ -304,9 +247,6 @@ public class Breakout extends GraphicsProgram {
         return null;
     }
 
-    /**
-     * Notify the user about his loss
-     * */
     private void notifyLoss() {
         GLabel loss = new GLabel(
         "Game Lost!",
@@ -318,9 +258,6 @@ public class Breakout extends GraphicsProgram {
         add(loss);
     }
 
-    /**
-     * Notify the user about his win
-     * */
     private void notifyWin() {
         GLabel win = new GLabel(
         "Game Won!",
