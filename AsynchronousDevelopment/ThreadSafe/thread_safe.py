@@ -15,8 +15,7 @@ class Writer:
         self.writer = open(*args)
         self.queue = Queue()
         self.finished = False
-        self.thread = threading.Thread(target=self.internal_writer, daemon=True)
-        self.thread.start() 
+        threading.Thread(target=self.internal_writer, daemon=True).start()
     
     def write(self, data):
         """Put to queue"""
@@ -28,7 +27,7 @@ class Writer:
         """
         while not self.finished:
             try:
-                data = self.queue.get()
+                data = self.queue.get(timeout=1)
             except Empty:
                 continue    
             self.writer.write(data)
@@ -39,7 +38,6 @@ class Writer:
         Close the connection to writer + related queues and threads
         """
         self.queue.join()
-        self.thread.join()
         self.finished = True
         self.writer.close()
 
