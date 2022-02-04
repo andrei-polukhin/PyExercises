@@ -1,7 +1,7 @@
 """
 Demonstrate the case of a thread-safe library
 
-We basically open each file in the read+write+append mode,
+We basically open each file in the write mode,
 but we use locks so that several threads will not break the logics.
 """
 import random
@@ -65,4 +65,3 @@ def test():
 
 if __name__ == '__main__':
     test()
-

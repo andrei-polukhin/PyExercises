@@ -1,41 +1,50 @@
 """
 Demonstrate the case of a not thread-safe library
 
-We basically open each file in the read+write+append mode,
+We basically open each file in the write mode,
 then upon several threads trying to open the file simultaneously
-we will get an empty file in the end...
+we will get the corrupted file.
 """
 import random
 import threading
 
-FILE_PATH = "./example.txt"
+
+class Writer:
+    """Implement NOT a thread-safe writing"""
+    def __init__(self, *args):
+        self.writer = open(*args)
+    
+    def write(self, data):
+        """Write to file"""
+        self.writer.write(data)
+    
+    def close(self):
+        """
+        Close the file
+        """
+        self.writer.close()
 
 
-def read_file():
-    contents = None
-    with open(FILE_PATH, 'r') as file:
-        contents = file.read()
+def test():
+    """Use case"""
+    FILE_PATH = "./example.txt"
+    writer = Writer(FILE_PATH, "w")
 
-    return contents
-
-
-def write_to_file():
-    with open(FILE_PATH, 'w') as file:
-        file.write("Some random contents: " + str(random.random()))
-
-
-def main():
     threads = []
-    for _ in range(5):
-        r_thread = threading.Thread(target=read_file, daemon=True)
-        w_thread = threading.Thread(target=write_to_file, daemon=True)
-
-        threads.append(r_thread)
-        threads.append(w_thread)
+    for _ in range(10):
+        thread = threading.Thread(
+            target=writer.write, args=(str(random.random()),), daemon=True
+        )
+        threads.append(thread)
 
     for thread in threads:
         thread.start()
 
+    for thread in threads:
+        thread.join()
+
+    writer.close()
+
 
 if __name__ == '__main__':
-    main()
+    test()
