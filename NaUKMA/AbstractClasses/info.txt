@@ -1,2 +1,0 @@
-Python does not know any differences
-between abstract classes and interfaces :(
